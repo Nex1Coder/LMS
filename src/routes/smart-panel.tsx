@@ -102,7 +102,7 @@ const tools: { id: ToolId; label: string; icon: typeof Bot; desc: string }[] = [
     id: "examdesigner",
     label: "طراح سوال آزمون",
     icon: ClipboardList,
-    desc: "تولید سوال از محتوای درس (ویژه استاد)",
+    desc: "تولید سوال از محتوای درس",
   },
 ];
 
@@ -111,7 +111,10 @@ function SmartPanelPage() {
   const visibleTools = React.useMemo(
     () =>
       role === "professor"
-        ? tools.filter((t) => t.id !== "studyplan" && t.id !== "explain" && t.id !== "flashcards")
+        ? tools.filter(
+            (t) =>
+              t.id !== "studyplan" && t.id !== "explain" && t.id !== "flashcards" && t.id !== "practice",
+          )
         : tools.filter((t) => t.id !== "examdesigner"),
     [role],
   );
