@@ -53,8 +53,8 @@ export const aiChat = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ data }) => {
-    const baseUrl = (getEnv("AI_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
-    const model = getEnv("AI_MODEL") ?? DEFAULT_MODEL;
+    const baseUrl = (getEnv("AI_BASE_URL") || DEFAULT_BASE_URL).replace(/\/+$/, "");
+    const model = getEnv("AI_MODEL") || DEFAULT_MODEL;
     const apiKey = getEnv("AI_API_KEY") ?? "";
 
     try {
@@ -100,10 +100,10 @@ export const aiChat = createServerFn({ method: "POST" })
   });
 
 export const aiInfo = createServerFn({ method: "GET" }).handler(async (): Promise<AiInfoResult> => {
-  const baseUrl = (getEnv("AI_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
+  const baseUrl = (getEnv("AI_BASE_URL") || DEFAULT_BASE_URL).replace(/\/+$/, "");
   return {
     configured: Boolean(getEnv("AI_API_KEY")) || isLocalBaseUrl(baseUrl),
-    model: getEnv("AI_MODEL") ?? DEFAULT_MODEL,
+    model: getEnv("AI_MODEL") || DEFAULT_MODEL,
     baseUrl,
   };
 });
