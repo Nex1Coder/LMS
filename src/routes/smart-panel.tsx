@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   Bot,
   BookOpenText,
+  ClipboardList,
   FileQuestion,
   GitBranch,
   Lightbulb,
@@ -13,6 +14,7 @@ import {
   Search,
   Send,
   Sparkles,
+  Upload,
   User,
   Zap,
 } from "lucide-react";
@@ -26,6 +28,7 @@ import {
   explainTopic,
   fetchAiStatus,
   generateConceptMap,
+  generateExamQuestions,
   generateFlashcards,
   generatePracticeQuestions,
   generateStudyPlan,
@@ -34,6 +37,7 @@ import {
   type UiChatMessage,
 } from "@/lib/ai";
 import type {
+  ExamQuestion,
   Flashcard,
   PracticeQuestion,
   SmartSearchResult,
@@ -42,6 +46,7 @@ import type {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -76,7 +81,8 @@ type ToolId =
   | "practice"
   | "studyplan"
   | "explain"
-  | "search";
+  | "search"
+  | "examdesigner";
 
 const tools: { id: ToolId; label: string; icon: typeof Bot; desc: string }[] = [
   {
@@ -92,6 +98,12 @@ const tools: { id: ToolId; label: string; icon: typeof Bot; desc: string }[] = [
   { id: "studyplan", label: "برنامه مطالعه", icon: ListChecks, desc: "برنامه تا تاریخ امتحان" },
   { id: "explain", label: "توضیح مبحث", icon: Lightbulb, desc: "توضیح ساده یا پیشرفته" },
   { id: "search", label: "جستجوی مفهومی", icon: Search, desc: "جستجو در جلسات و جزوات" },
+  {
+    id: "examdesigner",
+    label: "طراح سوال آزمون",
+    icon: ClipboardList,
+    desc: "تولید سوال از محتوای درس (ویژه استاد)",
+  },
 ];
 
 function SmartPanelPage() {
@@ -100,7 +112,7 @@ function SmartPanelPage() {
     () =>
       role === "professor"
         ? tools.filter((t) => t.id !== "studyplan" && t.id !== "explain" && t.id !== "flashcards")
-        : tools,
+        : tools.filter((t) => t.id !== "examdesigner"),
     [role],
   );
   const [active, setActive] = React.useState<ToolId>("chat");
@@ -147,6 +159,7 @@ function SmartPanelPage() {
             {active === "studyplan" && <StudyPlanTool />}
             {active === "explain" && <ExplainTool />}
             {active === "search" && <SearchTool />}
+            {active === "examdesigner" && <ExamDesignerTool />}
           </CardContent>
         </Card>
       </div>
@@ -599,6 +612,192 @@ function PracticeTool() {
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+function ExamDesignerTool() {
+  const [courseTitle, setCourseTitle] = React.useState("");
+  const [extraContent, setExtraContent] = React.useState("");
+  const [count, setCount] = React.useState(5);
+  const [difficulty, setDifficulty] = React.useState<"آسان" | "متوسط" | "سخت">("متوسط");
+  const [kind, setKind] = React.useState<"mc" | "essay" | "mixed">("mc");
+  const [questions, setQuestions] = React.useState<ExamQuestion[]>([]);
+  const [source, setSource] = React.useState<"ai" | "fallback">("fallback");
+  const [loading, setLoading] = React.useState(false);
+  const fileRef = React.useRef<HTMLInputElement>(null);
+
+  const course = courses.find((c) => c.title === courseTitle);
+
+  const generate = async () => {
+    if (!courseTitle || loading) return;
+    setLoading(true);
+    setQuestions([]);
+    const res = await generateExamQuestions({
+      courseTitle,
+      count,
+      difficulty,
+      kind,
+      ...(extraContent.trim() ? { extraContent: extraContent.trim() } : {}),
+    });
+    setLoading(false);
+    if (res.questions.length === 0) {
+      toast.warning("سوالی تولید نشد؛ درس را انتخاب کنید یا محتوای بیشتری بارگذاری نمایید");
+      return;
+    }
+    setQuestions(res.questions);
+    setSource(res.source);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-bold">طراح سوال آزمون از محتوای درس</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          بر اساس سرفصل‌ها، ضبط کلاس و متن بارگذاری‌شده درس، سوالات امتحانی به‌همراه پاسخ می‌سازد.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Select value={courseTitle} onValueChange={setCourseTitle}>
+          <SelectTrigger className="w-56">
+            <SelectValue placeholder="انتخاب درس" />
+          </SelectTrigger>
+          <SelectContent>
+            {courses.map((c) => (
+              <SelectItem key={c.id} value={c.title}>
+                {c.title} ({c.code})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Tabs value={kind} onValueChange={(v) => setKind(v as "mc" | "essay" | "mixed")}>
+          <TabsList>
+            <TabsTrigger value="mc">چهارگزینه‌ای</TabsTrigger>
+            <TabsTrigger value="essay">تشریحی</TabsTrigger>
+            <TabsTrigger value="mixed">ترکیبی</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Select
+          value={difficulty}
+          onValueChange={(v) => setDifficulty(v as "آسان" | "متوسط" | "سخت")}
+        >
+          <SelectTrigger className="w-28">
+            <SelectValue placeholder="سختی" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="آسان">آسان</SelectItem>
+            <SelectItem value="متوسط">متوسط</SelectItem>
+            <SelectItem value="سخت">سخت</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={String(count)} onValueChange={(v) => setCount(Number(v))}>
+          <SelectTrigger className="w-28">
+            <SelectValue placeholder="تعداد" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 15, 20].map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {n} سوال
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="rounded-xl border border-dashed border-border p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-medium">محتوا و جزوه درس</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileRef.current?.click()}
+          >
+            <Upload className="size-3" /> بارگذاری فایل متن
+          </Button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".txt,.md,text/plain"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) {
+                const reader = new FileReader();
+                reader.onload = () => setExtraContent(String(reader.result ?? ""));
+                reader.readAsText(f);
+              }
+              e.currentTarget.value = "";
+            }}
+          />
+        </div>
+        {course && !extraContent.trim() && (
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            سوالات بر اساس {course.slides.length} جلسه و {course.recordings.length} ضبط «
+            {course.title}» ({course.units} واحد) طراحی می‌شوند.
+          </p>
+        )}
+        <Textarea
+          value={extraContent}
+          onChange={(e) => setExtraContent(e.target.value)}
+          placeholder="می‌توانید متن جزوه یا محتوای کلاس را اینجا جایگذاری کنید (اختیاری)…"
+          className="mt-3 min-h-24"
+        />
+      </div>
+
+      <Button onClick={() => void generate()} disabled={!courseTitle || loading}>
+        {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+        طراحی سوالات
+      </Button>
+
+      {loading && <div className="h-24 animate-pulse rounded-xl bg-muted" />}
+      {questions.length > 0 && !loading && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <SourceBadge source={source} />
+            <Badge variant="outline" className="text-[10px]">
+              {questions.length} سوال تولید شد
+            </Badge>
+          </div>
+          {questions.map((q, i) => (
+            <div key={i} className="rounded-xl border border-border p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="flex size-6 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-navy">
+                  {i + 1}
+                </span>
+                <Badge variant="secondary">{q.type === "mc" ? "چهارگزینه‌ای" : "تشریحی"}</Badge>
+                <Badge variant="outline">{difficulty}</Badge>
+              </div>
+              <p className="mt-3 text-sm font-medium leading-7">{q.q}</p>
+              {q.type === "mc" && q.options.length > 0 && (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {q.options.map((opt, oi) => (
+                    <div
+                      key={oi}
+                      className={cn(
+                        "rounded-lg border border-border p-2 text-xs",
+                        oi === q.answer && "border-green-500 bg-green-50 text-green-700",
+                      )}
+                    >
+                      {opt}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="mt-3 rounded-lg bg-accent/10 p-3 text-xs leading-6">
+                <span className="font-bold text-navy">پاسخ: </span>
+                {q.type === "mc" ? (q.options[q.answer] ?? "—") : q.modelAnswer}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {courseTitle && !loading && questions.length === 0 && !extraContent && (
+        <p className="text-xs text-muted-foreground">
+          درس انتخاب شد؛ دکمه «طراحی سوالات» را بزنید.
+        </p>
       )}
     </div>
   );

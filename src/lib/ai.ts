@@ -4,6 +4,7 @@ import {
   assignments,
   conceptMapsByCourse,
   courses,
+  examQuestionsByCourse,
   explanationTopics,
   exams,
   flashcardsByCourse,
@@ -11,6 +12,7 @@ import {
   smartSummaries,
   smartSearchIndex,
   studyPlanByCourse,
+  type ExamQuestion,
   type Flashcard,
   type Explanation,
   type PracticeQuestion,
@@ -317,4 +319,67 @@ export function localConceptSearch(query: string): SmartSearchResult[] {
         (r) => r.topic.toLowerCase().includes(q) || r.snippet.toLowerCase().includes(q),
       )
     : [];
+}
+
+export async function generateExamQuestions(input: {
+  courseTitle: string;
+  extraContent?: string;
+  count: number;
+  difficulty: "آسان" | "متوسط" | "سخت";
+  kind: "mc" | "essay" | "mixed";
+}): Promise<{ questions: ExamQuestion[]; source: "ai" | "fallback" }> {
+  const fallback = examQuestionsByCourse[input.courseTitle] ?? [];
+  if (!(await isRealAi())) return { questions: fallback, source: "fallback" };
+
+  const course = courses.find((c) => c.title === input.courseTitle);
+  const auto = course
+    ? [
+        `درس «${course.title}» (${course.code}) — استاد ${course.professor}, نیم‌سال ${course.semester}.`,
+        `سرفصل‌های جلسات: ${course.slides.map((s) => s.title).join("؛ ")}.`,
+        `ضبط‌های کلاس: ${course.recordings.map((r) => r.title).join("؛ ")}.`,
+        input.extraContent ? `محتوا/جزوه بارگذاری‌شده:\n${input.extraContent}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : [input.courseTitle, input.extraContent].filter(Boolean).join("\n");
+
+  const kindLabel =
+    input.kind === "mc"
+      ? "فقط چهارگزینه‌ای"
+      : input.kind === "essay"
+        ? "فقط تشریحی"
+        : "چهارگزینه‌ای و تشریحی";
+  const prompt =
+    `شما طراح سوالات امتحانی دانشگاه هستید. بر اساس محتوای درس زیر، ${input.count} سؤال امتحانی با سطح دشواری «${input.difficulty}» بساز (${kindLabel}).\n${auto}\n` +
+    `فقط JSON خالص برگردان (بدون متن اضافی و بدون backtick) با فرمت آرایه:\n` +
+    `[{"type":"mc","q":"سؤال","options":["الف","ب","ج","د"],"answer":0},{"type":"essay","q":"سؤال تشریحی","options":[],"answer":-1,"modelAnswer":"پاسخ پیشنهادی"}]\n` +
+    `برای نوع mc چهار گزینه و answer شاخص صفر-پایه گزینه صحیح است؛ برای essay از modelAnswer استفاده کن. پرسش‌ها از محتوای همین درس طراحی شوند و تکراری نباشند.`;
+
+  const res = await call([
+    { role: "system", content: STUDY_SYSTEM_PROMPT },
+    { role: "user", content: prompt },
+  ]);
+  if (res.ok) {
+    const parsed = parseJson<ExamQuestion[]>(res.content);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const valid = parsed
+        .filter(
+          (q) =>
+            q &&
+            typeof q.q === "string" &&
+            (q.type === "mc"
+              ? Array.isArray(q.options) && q.options.length >= 2 && typeof q.answer === "number"
+              : typeof q.modelAnswer === "string"),
+        )
+        .map((q) => ({
+          type: q.type === "essay" ? ("essay" as const) : ("mc" as const),
+          q: q.q,
+          options: Array.isArray(q.options) ? q.options.filter((o) => typeof o === "string") : [],
+          answer: typeof q.answer === "number" ? q.answer : -1,
+          modelAnswer: q.modelAnswer ?? "",
+        }));
+      if (valid.length > 0) return { questions: valid, source: "ai" };
+    }
+  }
+  return { questions: fallback, source: "fallback" };
 }
