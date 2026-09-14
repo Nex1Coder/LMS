@@ -27,7 +27,11 @@ function getEnv(key: string): string | undefined {
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 const DEFAULT_MODEL = "gpt-4o-mini";
-const REQUEST_TIMEOUT_MS = 60_000;
+const REQUEST_TIMEOUT_MS = 120_000;
+
+function isLocalBaseUrl(baseUrl: string): boolean {
+  return /^(http:\/\/|https?:\/\/)?(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)/i.test(baseUrl);
+}
 
 export const aiChat = createServerFn({ method: "POST" })
   .validator((d: unknown) => {
@@ -49,21 +53,20 @@ export const aiChat = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ data }) => {
-    const apiKey = getEnv("AI_API_KEY");
-    if (!apiKey) return { ok: false, kind: "no-key" } as const;
-
     const baseUrl = (getEnv("AI_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
     const model = getEnv("AI_MODEL") ?? DEFAULT_MODEL;
+    const apiKey = getEnv("AI_API_KEY") ?? "";
 
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      const headers: Record<string, string> = {
+        "content-type": "application/json",
+      };
+      if (apiKey) headers["authorization"] = `Bearer ${apiKey}`;
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({
           model,
           messages: data.messages,
@@ -97,9 +100,10 @@ export const aiChat = createServerFn({ method: "POST" })
   });
 
 export const aiInfo = createServerFn({ method: "GET" }).handler(async (): Promise<AiInfoResult> => {
+  const baseUrl = (getEnv("AI_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
   return {
-    configured: Boolean(getEnv("AI_API_KEY")),
+    configured: Boolean(getEnv("AI_API_KEY")) || isLocalBaseUrl(baseUrl),
     model: getEnv("AI_MODEL") ?? DEFAULT_MODEL,
-    baseUrl: getEnv("AI_BASE_URL") ?? DEFAULT_BASE_URL,
+    baseUrl,
   };
 });
