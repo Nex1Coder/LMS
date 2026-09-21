@@ -26,6 +26,7 @@ import {
   ClipboardCheck,
   CalendarDays,
   BarChart3,
+  Presentation,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,7 @@ const navItems: NavItem[] = [
   { to: "/exams", label: "آزمون‌ها", icon: FileCheck2, roles: ["professor"] },
   { to: "/grades", label: "نمرات و کارنامه", icon: GraduationCap, roles: ["student", "professor"] },
   { to: "/classroom", label: "کلاس آنلاین", icon: Video, roles: ["student", "professor"] },
+  { to: "/classroom", label: "وایت‌برد استاد", icon: Presentation, roles: ["professor"] },
   { to: "/requests", label: "درخواست‌های آموزشی", icon: Inbox, roles: ["student", "admin"] },
   { to: "/question-bank", label: "بانک سؤال", icon: Database, roles: ["professor"] },
   {
@@ -92,7 +94,7 @@ function NavLinks({
           const active = pathname === to;
           return (
             <Link
-              key={to}
+              key={label}
               to={to}
               onClick={onNavigate}
               className={cn(

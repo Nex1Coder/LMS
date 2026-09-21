@@ -11,14 +11,19 @@ import {
   Send,
   Users,
   Pencil,
+  Monitor,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
+import { WhiteBoard } from "@/components/whiteboard/WhiteBoard";
 import { classChat, studentsList } from "@/lib/mock-data";
+import { useRole } from "@/lib/role";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +43,9 @@ export const Route = createFileRoute("/classroom")({
 });
 
 function ClassroomPage() {
+  const { role } = useRole();
+  const [studentView, setStudentView] = React.useState(false);
+  const readOnly = role !== "professor" || studentView;
   const [mic, setMic] = React.useState(false);
   const [cam, setCam] = React.useState(false);
   const [messages, setMessages] = React.useState(classChat);
@@ -170,6 +178,33 @@ function ClassroomPage() {
             </Button>
           </div>
         </Card>
+      </div>
+
+      <div className="mt-5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Monitor className="size-4 text-navy" />
+            <p className="text-sm font-bold">وایت‌برد استاد — مبانی هوش مصنوعی</p>
+            <Badge variant="secondary" className="text-[10px]">
+              جلسه ۷
+            </Badge>
+          </div>
+          {role === "professor" && (
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Eye className="size-4" />
+              نمای دانشجو (فقط‌خواندنی)
+              <Switch checked={studentView} onCheckedChange={setStudentView} />
+            </label>
+          )}
+        </div>
+
+        <WhiteBoard readOnly={readOnly} />
+
+        <p className="text-center text-xs text-muted-foreground">
+          {readOnly
+            ? "تختهٔ استاد به‌صورت زنده با همان محتوا نمایش داده می‌شود (نمایش فقط‌خواندنی)."
+            : "با قلم، هایلایت، شکل، متن و لیزر تدریس کنید؛ دروس روی برگه‌ها ذخیره می‌شوند و دانشجویان همان لحظه می‌بینند."}
+        </p>
       </div>
     </AppShell>
   );
