@@ -243,6 +243,14 @@ function CourseDetailSidebar({ course }: { course: Course }) {
         <p className="text-xs text-muted-foreground">{course.room}</p>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold">لینک‌های جلسات کلاس</p>
+          <div className="rounded-xl border border-border p-3 text-xs">
+            <p className="font-medium">جلسه آینده</p>
+            <p className="text-muted-foreground">۱۴۰۵/۰۷/۱۵ — ۱۰:۰۰</p>
+            <a href="#" className="text-primary underline">ورود به کلاس</a>
+          </div>
+        </div>
         {isProfessor && (
           <div className="space-y-3">
             <p className="text-xs font-semibold">تعریف لینک کلاس جدید برای این درس</p>
