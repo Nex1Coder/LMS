@@ -68,7 +68,7 @@ const navItems: NavItem[] = [
   { to: "/send-notification", label: "اعلان‌ها", icon: Bell, roles: ["professor", "admin"] },
   { to: "/live-polls", label: "نظرسنجی حین تدریس", icon: Vote, roles: [] },
   { to: "/smart-panel", label: "پنل هوشمند", icon: Bot, roles: ["student", "professor"] },
-  { to: "/", label: "پروفایل", icon: UserCog, roles: ["student", "professor", "admin"] },
+  { to: "/", label: "پروفایل", icon: UserCog, roles: ["student", "admin"] },
   { to: "/academic-structure", label: "ساختار آموزشی", icon: Building2, roles: ["admin"] },
   { to: "/scheduling", label: "زمان‌بندی و تداخل", icon: CalendarClock, roles: ["admin"] },
   { to: "/add-drop", label: "حذف و اضافه واحد", icon: ListChecks, roles: ["admin"] },
