@@ -1,18 +1,21 @@
 import * as React from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Mic, MicOff, Video, VideoOff, Hand, PhoneOff, Send, Pencil, Eye } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Send, Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { WhiteBoard } from "@/components/whiteboard/WhiteBoard";
-import { ScreenShare } from "@/components/classroom/ScreenShare";
+import { ClassStage } from "@/components/classroom/ClassStage";
 import { ClassFiles } from "@/components/classroom/ClassFiles";
 import { ClassRoster } from "@/components/classroom/ClassRoster";
+import { ClassControls } from "@/components/classroom/ClassControls";
 import { classChat, demoUsers, studentsList } from "@/lib/mock-data";
 import { useClassroom } from "@/lib/classroom-store";
 import { useRole } from "@/lib/role";
+import { useLocalMedia } from "@/lib/local-media";
+import { useScreenShare } from "@/lib/screen-share";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,8 +23,6 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/classroom")({
   validateSearch: (search: Record<string, unknown>): { session?: string } => {
-    // اگر کاربر دستی آدرس را عوض کند و جلسه نامعتبر باشد، صفحه نباید
-    // سفید شود؛ فقط پارامتر نادیده گرفته می‌شود.
     const id = search["session"];
     return typeof id === "string" && id ? { session: id } : {};
   },
@@ -32,38 +33,38 @@ export const Route = createFileRoute("/classroom")({
         name: "description",
         content: "شبیه‌ساز کلاس زنده مجازی با تخته اشتراکی، چت کلاس، اشتراک صفحه و بارگذاری فایل.",
       },
-      { property: "og:title", content: "کلاس آنلاین زنده" },
-      {
-        property: "og:description",
-        content: "تخته اشتراکی، چت کلاس، اشتراک صفحه و فایل.",
-      },
     ],
   }),
   component: ClassroomPage,
 });
 
 function ClassroomPage() {
+  const navigate = useNavigate();
   const { role } = useRole();
-  const { sessions, isPresenter } = useClassroom();
+  const { sessions, isPresenter, isAdmin } = useClassroom();
   const { session: sessionId } = Route.useSearch();
-  // همیشه یک جلسه باید باشد تا صفحه نشکند. اگر پارامتر نبود یا نامعتبر
-  // بود، اولین جلسهٔ فهرست نمایش داده می‌شود، مثل رفتار قبلی صفحه.
   const session = sessions.find((s) => s.id === sessionId) ?? sessions[0]!;
 
+  const media = useLocalMedia();
+  const screen = useScreenShare();
+  const { sharedFile } = useClassroom();
+
   const [studentView, setStudentView] = React.useState(false);
-  const [mic, setMic] = React.useState(false);
-  const [cam, setCam] = React.useState(false);
   const [messages, setMessages] = React.useState(classChat);
   const [text, setText] = React.useState("");
 
   const meName = role ? demoUsers[role].name : "";
   const meStudentId = studentsList.find((s) => s.name === meName)?.id;
 
-  // ارائه‌دهنده کسی است که یا استاد است یا استاد نقشش را داده. «نمای
-  // دانشجو» روی حالت استاد، همه را فقط‌خواندنی می‌کند.
   const isProfessor = role === "professor";
+  const grantedAdmin = Boolean(meStudentId) && isAdmin(session.id, meStudentId!);
+  const isManager = isProfessor || grantedAdmin;
   const grantedPresenter = Boolean(meStudentId) && isPresenter(session.id, meStudentId!);
-  const canPresent = isProfessor ? !studentView : role === "student" && grantedPresenter;
+  const canPresent = studentView
+    ? false
+    : isProfessor
+      ? true
+      : role === "student" && (grantedPresenter || grantedAdmin);
   const readOnly = !canPresent;
 
   const send = () => {
@@ -73,6 +74,13 @@ function ClassroomPage() {
     setText("");
   };
 
+  const handleLeave = () => {
+    media.stopAll();
+    screen.stop();
+    toast.info("از کلاس خارج شدید");
+    navigate({ to: "/" });
+  };
+
   return (
     <AppShell
       title={`کلاس آنلاین — ${session.course}`}
@@ -80,73 +88,28 @@ function ClassroomPage() {
     >
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Card className="overflow-hidden">
-            <div className="relative aspect-video bg-navy">
-              {canPresent ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-primary-foreground/80">
-                  <Pencil className="size-8 text-accent" />
-                  <p className="text-sm">
-                    {grantedPresenter ? "شما ارائه‌دهندهٔ این جلسه هستید" : "تخته اشتراکی استاد"}
-                  </p>
-                  <div className="mx-8 w-full max-w-md space-y-2">
-                    <div className="h-2 rounded-full bg-white/20" />
-                    <div className="h-2 w-4/5 rounded-full bg-white/15" />
-                    <div className="h-2 w-3/5 rounded-full bg-white/10" />
-                  </div>
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-primary-foreground/70">
-                  <Eye className="size-7" />
-                  <p className="text-sm">در حال تماشا — {session.professor} ارائه می‌دهد</p>
-                </div>
-              )}
-              <Badge className="absolute end-3 top-3 bg-destructive text-destructive-foreground">
-                زنده
-              </Badge>
-              <div className="absolute bottom-3 start-3 flex size-24 items-center justify-center rounded-xl bg-black/40 text-[11px] text-primary-foreground/80 ring-1 ring-white/20">
-                {cam ? "تصویر شما" : "دوربین خاموش"}
-              </div>
-            </div>
-            <CardContent className="space-y-3 py-4">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Button
-                  variant={mic ? "default" : "outline"}
-                  onClick={() => {
-                    setMic(!mic);
-                    toast.info(mic ? "میکروفون خاموش شد" : "میکروفون روشن شد");
-                  }}
-                >
-                  {mic ? <Mic className="size-4" /> : <MicOff className="size-4" />}
-                  {mic ? "میکروفون روشن" : "میکروفون خاموش"}
-                </Button>
-                <Button
-                  variant={cam ? "default" : "outline"}
-                  onClick={() => {
-                    setCam(!cam);
-                    toast.info(cam ? "دوربین خاموش شد" : "دوربین روشن شد");
-                  }}
-                >
-                  {cam ? <Video className="size-4" /> : <VideoOff className="size-4" />}
-                  {cam ? "دوربین روشن" : "دوربین خاموش"}
-                </Button>
-                <Button variant="outline" onClick={() => toast.success("درخواست صحبت ارسال شد")}>
-                  <Hand className="size-4" /> درخواست صحبت
-                </Button>
-                <Button variant="destructive" onClick={() => toast.info("از کلاس خارج شدید")}>
-                  <PhoneOff className="size-4" /> خروج از کلاس
-                </Button>
-              </div>
-              <div className="max-w-sm">
-                <ScreenShare canShare={canPresent} />
-              </div>
-            </CardContent>
-          </Card>
-
-          <ClassFiles
-            sessionId={session.id}
-            uploader={meName}
-            canUpload={isProfessor && !studentView}
+          <ClassStage
+            session={session}
+            sharedFile={sharedFile[session.id] ?? null}
+            cameraStream={media.camStream}
+            screenStream={screen.stream}
+            screenState={screen.state}
+            canPresent={canPresent}
+            grantedPresenter={grantedPresenter}
           />
+          <div className="flex justify-center">
+            <ClassControls
+              media={media}
+              screen={screen}
+              canSpeak={isProfessor || grantedAdmin || grantedPresenter}
+              canShare={canPresent}
+              onLeave={handleLeave}
+              isProfessor={isProfessor}
+              sessionId={session.id}
+              studentId={meStudentId ?? ""}
+            />
+          </div>
+          <ClassFiles sessionId={session.id} uploader={meName} canUpload={isManager} />
         </div>
 
         <div className="space-y-4">
@@ -185,7 +148,7 @@ function ClassroomPage() {
                   <ClassRoster
                     sessionId={session.id}
                     professorName={session.professor}
-                    canManage={isProfessor && !studentView}
+                    canManage={isManager}
                   />
                 </TabsContent>
               </Tabs>
@@ -227,9 +190,7 @@ function ClassroomPage() {
             </label>
           )}
         </div>
-
         <WhiteBoard readOnly={readOnly} />
-
         <p className="text-center text-xs text-muted-foreground">
           {readOnly
             ? "تختهٔ استاد به‌صورت زنده با همان محتوا نمایش داده می‌شود (نمایش فقط‌خواندنی)."

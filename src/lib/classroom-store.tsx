@@ -17,6 +17,37 @@ import { classSessions, type ClassSession } from "./mock-data";
 const LINKS_KEY = "lms-session-links-v1";
 const PRESENTERS_KEY = "lms-session-presenters-v1";
 const FILES_KEY = "lms-session-files-v1";
+const HANDS_KEY = "lms-session-hands-v1";
+const MUTED_KEY = "lms-session-muted-v1";
+const ADMINS_KEY = "lms-session-admins-v1";
+const SHARED_FILE_KEY = "lms-session-shared-file-v1";
+
+/** وضعیت یک درخواست صحبت. */
+export type HandStatus = "pending" | "approved" | "denied";
+
+/** درخواست صحبت یک دانشجو در یک جلسه. */
+export type HandRequest = {
+  studentId: string;
+  status: HandStatus;
+  /** زمان درخواست به میلی‌ثانیه؛ برای مرتب‌سازی و نمایش. */
+  at: number;
+};
+
+/**
+ * فایلی که همین الان به کلاس نشان داده می‌شود.
+ *
+ * «اشتراک فایل» با «بارگذاری فایل» فرق دارد: بارگذاری یعنی فایل در فهرست
+ * کلاس می‌ماند، ولی اشتراک یعنی فایل روی صفحهٔ اصلی کلاس باز می‌شود تا
+ * همه ببینند. فقط یک فایل در هر لحظه به اشتراک گذاشته می‌شود.
+ */
+export type SharedFile = {
+  id: string;
+  name: string;
+  ext: string;
+  uploader: string;
+  /** فقط برای تصویر؛ بقیهٔ فرمت‌ها به‌صورت کارت نمایش داده می‌شوند. */
+  previewUrl?: string | undefined;
+};
 
 /** فایل‌های داخل مرورگر با object URL ساخته می‌شوند و بین رفرش‌ها باقی نمی‌مانند. */
 export type UploadedFile = {
@@ -63,6 +94,34 @@ export type ClassroomState = {
   isPresenter: (sessionId: string, studentId: string) => boolean;
   togglePresenter: (sessionId: string, studentId: string) => void;
 
+  /**
+   * دسترسی ادمین کلاس. ادمین مثل استاد می‌تواند نقش ارائه‌دهنده بدهد،
+   * درخواست صحبت را تأیید کند و فایل به اشتراک بگذارد، ولی خودش لینک
+   * جلسه را تغییر نمی‌دهد و نمی‌تواند نقش ادمین را به کسی بدهد.
+   */
+  admins: Record<string, string[]>;
+  isAdmin: (sessionId: string, studentId: string) => boolean;
+  toggleAdmin: (sessionId: string, studentId: string) => void;
+
+  /**
+   * درخواست صحبت: دانشجو دستش را بالا می‌برد و در فهرست استاد دیده
+   * می‌شود. استاد یا ادمین تأیید یا رد می‌کند و نتیجه در state می‌ماند.
+   */
+  hands: Record<string, HandRequest[]>;
+  myHand: (sessionId: string, studentId: string) => HandRequest | null;
+  raiseHand: (sessionId: string, studentId: string) => void;
+  lowerHand: (sessionId: string, studentId: string) => void;
+  resolveHand: (sessionId: string, studentId: string, status: HandStatus) => void;
+
+  /** سکوت تک‌تک دانشجویان توسط استاد یا ادمین. */
+  muted: Record<string, string[]>;
+  isMuted: (sessionId: string, studentId: string) => boolean;
+  toggleMute: (sessionId: string, studentId: string) => void;
+
+  /** فایلی که الان روی صفحهٔ کلاس باز است. */
+  sharedFile: Record<string, SharedFile | null>;
+  setSharedFile: (sessionId: string, file: SharedFile | null) => void;
+
   files: Record<string, UploadedFile[]>;
   addFiles: (sessionId: string, files: UploadedFile[]) => void;
   removeFile: (sessionId: string, fileId: string) => void;
@@ -92,6 +151,18 @@ export function ClassroomProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = React.useState<Record<string, UploadedFile[]>>(() =>
     readJson(FILES_KEY, {} as Record<string, UploadedFile[]>),
   );
+  const [admins, setAdmins] = React.useState<Record<string, string[]>>(() =>
+    readJson(ADMINS_KEY, {} as Record<string, string[]>),
+  );
+  const [hands, setHands] = React.useState<Record<string, HandRequest[]>>(() =>
+    readJson(HANDS_KEY, {} as Record<string, HandRequest[]>),
+  );
+  const [muted, setMuted] = React.useState<Record<string, string[]>>(() =>
+    readJson(MUTED_KEY, {} as Record<string, string[]>),
+  );
+  const [sharedFile, setSharedFileState] = React.useState<Record<string, SharedFile | null>>(() =>
+    readJson(SHARED_FILE_KEY, {} as Record<string, SharedFile | null>),
+  );
 
   const setLink = React.useCallback((sessionId: string, link: string) => {
     setCustomLinks((prev) => {
@@ -111,6 +182,86 @@ export function ClassroomProvider({ children }: { children: React.ReactNode }) {
           : [...list, studentId],
       };
       writeJson(PRESENTERS_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const toggleAdmin = React.useCallback((sessionId: string, studentId: string) => {
+    setAdmins((prev) => {
+      const list = prev[sessionId] ?? [];
+      const next = {
+        ...prev,
+        [sessionId]: list.includes(studentId)
+          ? list.filter((id) => id !== studentId)
+          : [...list, studentId],
+      };
+      writeJson(ADMINS_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const raiseHand = React.useCallback((sessionId: string, studentId: string) => {
+    setHands((prev) => {
+      const list = prev[sessionId] ?? [];
+      // دانشجو نمی‌تواند هم‌زمان چند درخواست باز داشته باشد؛ درخواست قبلی
+      // همان به‌روز می‌شود.
+      const next = {
+        ...prev,
+        [sessionId]: [
+          ...list.filter((h) => h.studentId !== studentId),
+          { studentId, status: "pending" as const, at: Date.now() },
+        ],
+      };
+      writeJson(HANDS_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const lowerHand = React.useCallback((sessionId: string, studentId: string) => {
+    setHands((prev) => {
+      const next = {
+        ...prev,
+        [sessionId]: (prev[sessionId] ?? []).filter((h) => h.studentId !== studentId),
+      };
+      writeJson(HANDS_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const resolveHand = React.useCallback(
+    (sessionId: string, studentId: string, status: HandStatus) => {
+      setHands((prev) => {
+        const next = {
+          ...prev,
+          [sessionId]: (prev[sessionId] ?? []).map((h) =>
+            h.studentId === studentId ? { ...h, status } : h,
+          ),
+        };
+        writeJson(HANDS_KEY, next);
+        return next;
+      });
+    },
+    [],
+  );
+
+  const toggleMute = React.useCallback((sessionId: string, studentId: string) => {
+    setMuted((prev) => {
+      const list = prev[sessionId] ?? [];
+      const next = {
+        ...prev,
+        [sessionId]: list.includes(studentId)
+          ? list.filter((id) => id !== studentId)
+          : [...list, studentId],
+      };
+      writeJson(MUTED_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const setSharedFile = React.useCallback((sessionId: string, file: SharedFile | null) => {
+    setSharedFileState((prev) => {
+      const next = { ...prev, [sessionId]: file };
+      writeJson(SHARED_FILE_KEY, next);
       return next;
     });
   }, []);
@@ -135,6 +286,14 @@ export function ClassroomProvider({ children }: { children: React.ReactNode }) {
       writeJson(FILES_KEY, next);
       return next;
     });
+    // اگر فایلی که روی صفحهٔ کلاس باز بود حذف شود، نمایش آن هم باید قطع
+    // شود؛ وگرنه دانشجو یک کارت خالی می‌بیند.
+    setSharedFileState((prev) => {
+      if (prev[sessionId]?.id !== fileId) return prev;
+      const next = { ...prev, [sessionId]: null };
+      writeJson(SHARED_FILE_KEY, next);
+      return next;
+    });
   }, []);
 
   const value = React.useMemo<ClassroomState>(() => {
@@ -147,11 +306,43 @@ export function ClassroomProvider({ children }: { children: React.ReactNode }) {
       presenters,
       isPresenter: (sessionId, studentId) => (presenters[sessionId] ?? []).includes(studentId),
       togglePresenter,
+      admins,
+      isAdmin: (sessionId, studentId) => (admins[sessionId] ?? []).includes(studentId),
+      toggleAdmin,
+      hands,
+      myHand: (sessionId, studentId) =>
+        (hands[sessionId] ?? []).find((h) => h.studentId === studentId) ?? null,
+      raiseHand,
+      lowerHand,
+      resolveHand,
+      muted,
+      isMuted: (sessionId, studentId) => (muted[sessionId] ?? []).includes(studentId),
+      toggleMute,
+      sharedFile: Object.fromEntries(Object.entries(sharedFile).filter(([k]) => known.has(k))),
+      setSharedFile,
       files: Object.fromEntries(Object.entries(files).filter(([k]) => known.has(k))),
       addFiles,
       removeFile,
     };
-  }, [customLinks, presenters, files, setLink, togglePresenter, addFiles, removeFile]);
+  }, [
+    customLinks,
+    presenters,
+    admins,
+    hands,
+    muted,
+    sharedFile,
+    files,
+    setLink,
+    togglePresenter,
+    toggleAdmin,
+    raiseHand,
+    lowerHand,
+    resolveHand,
+    toggleMute,
+    setSharedFile,
+    addFiles,
+    removeFile,
+  ]);
 
   return <ClassroomContext.Provider value={value}>{children}</ClassroomContext.Provider>;
 }

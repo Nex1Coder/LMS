@@ -35,6 +35,10 @@ const IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp"]);
 
 export const isImageExt = (ext: string) => IMAGE_EXTS.has(ext);
 
+const PREVIEW_EXTS = new Set([...IMAGE_EXTS, "pdf"]);
+
+export const isPreviewableExt = (ext: string) => PREVIEW_EXTS.has(ext);
+
 export const fileExt = (name: string): string => {
   const dot = name.lastIndexOf(".");
   if (dot < 0 || dot === name.length - 1) return "";
