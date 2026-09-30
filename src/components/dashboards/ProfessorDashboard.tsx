@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Users, ClipboardCheck, CalendarClock, FileText } from "lucide-react";
-import { courses, assignments, exams, notifications, classSessions } from "@/lib/mock-data";
+import { BookOpen, Users, ClipboardCheck, CalendarClock, FileText, Activity } from "lucide-react";
+import { courses, assignments, exams, notifications, classSessions, studentsList } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,14 @@ export function ProfessorDashboard() {
 
   const upcomingClasses = classSessions.slice(0, 5);
   const pendingReview = assignments.slice(0, 5);
+
+  const studentsWithActivity = studentsList.map(s => {
+    const attendance = Math.round(60 + Math.random()*40);
+    const participation = Math.round(40 + Math.random()*60);
+    const qa = Math.round(20 + Math.random()*80);
+    const score = Math.round(attendance*0.4 + participation*0.3 + qa*0.3);
+    return { ...s, attendance, participation, qa, score };
+  }).sort((a,b)=>b.score-a.score);
 
   return (
     <div className="grid gap-5 xl:grid-cols-3">
@@ -83,6 +91,26 @@ export function ProfessorDashboard() {
                   <span>تعداد تحویل‌ها: {a.submissions ?? 12}</span>
                   <Badge variant={a.status === "در انتظار ارسال" ? "default" : "secondary"}>{a.status}</Badge>
                 </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2"><Activity className="size-4"/> فعالیت دانشجویان</CardTitle>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/at-risk-students">مشاهده کامل</Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {studentsWithActivity.slice(0, 8).map(s => (
+              <div key={s.id} className="flex items-center justify-between rounded-xl border border-border p-3 text-xs">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-muted-foreground">حضور {s.attendance}% • مشارکت {s.participation}% • سؤال {s.qa}%</p>
+                </div>
+                <Badge variant={s.score >= 80 ? "default" : s.score >= 60 ? "secondary" : "destructive"}>{s.score}</Badge>
               </div>
             ))}
           </CardContent>

@@ -165,6 +165,18 @@ function SmartPanelPage() {
             {active === "examdesigner" && <ExamDesignerTool />}
           </CardContent>
         </Card>
+
+        {role === "professor" && (
+          <Card className="lg:col-span-4">
+            <CardHeader>
+              <CardTitle className="text-base">ابزارهای مدیریتی</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-3">
+              <a href="/live-polls"><Button variant="outline">نظرسنجی حین تدریس</Button></a>
+              <a href="/question-bank"><Button variant="outline">بانک سؤال</Button></a>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AppShell>
   );
