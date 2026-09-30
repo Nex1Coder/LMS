@@ -95,44 +95,48 @@ function AcademicStructurePage() {
 function DepartmentsTab() {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader><CardTitle className="text-base">تعریف مجتمع جدید</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <Input placeholder="نام مجتمع" />
+      <Card>
+        <CardHeader><CardTitle className="text-base">تعریف مجتمع و درس داخل آن</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام مجتمع" />
+          <div className="grid gap-3 sm:grid-cols-3">
             <Input placeholder="نام درس" />
             <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("مجتمع جدید ثبت شد")}>ثبت مجتمع</Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-base">تعریف پژوهشکده جدید</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <Input placeholder="نام پژوهشکده" />
+            <Button onClick={()=> toast.success("درس برای مجتمع ثبت و به استاد تخصیص یافت")}>ثبت درس در مجتمع</Button>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">تعریف پژوهشکده و درس داخل آن</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام پژوهشکده" />
+          <div className="grid gap-3 sm:grid-cols-3">
             <Input placeholder="نام درس" />
             <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("پژوهشکده جدید ثبت شد")}>ثبت پژوهشکده</Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-base">تعریف گروه علمی جدید</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <Input placeholder="نام گروه علمی" />
+            <Button onClick={()=> toast.success("درس برای پژوهشکده ثبت و به استاد تخصیص یافت")}>ثبت درس در پژوهشکده</Button>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">تعریف گروه علمی و درس داخل آن</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام گروه علمی" />
+          <div className="grid gap-3 sm:grid-cols-3">
             <Input placeholder="نام درس" />
             <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("گروه علمی جدید ثبت شد")}>ثبت گروه</Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-base">تعریف درس جدید</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            <Input placeholder="کد درس" />
-            <Input placeholder="نام درس" />
-            <Input placeholder="واحد" />
-            <Button onClick={()=> toast.success("درس جدید ثبت شد")}>ثبت درس</Button>
-          </CardContent>
-        </Card>
-      </div>
+            <Button onClick={()=> toast.success("درس برای گروه علمی ثبت و به استاد تخصیص یافت")}>ثبت درس در گروه</Button>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">تعریف درس مستقل</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="کد درس" />
+          <Input placeholder="نام درس" />
+          <Input placeholder="واحد" />
+          <Button onClick={()=> toast.success("درس جدید ثبت شد")}>ثبت درس</Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
