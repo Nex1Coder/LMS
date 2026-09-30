@@ -56,7 +56,7 @@ function AcademicStructurePage() {
         <TabsList className="mb-5">
           <TabsTrigger value="departments" className="gap-1.5">
             <Building2 className="size-3.5" />
-            دانشکده‌ها و گروه‌ها
+            مجتمع‌ها
           </TabsTrigger>
           <TabsTrigger value="courses" className="gap-1.5">
             <BookOpen className="size-3.5" />
@@ -93,22 +93,8 @@ function AcademicStructurePage() {
 }
 
 function DepartmentsTab() {
-  const grouped = facultyNames.map((f) => ({
-    faculty: f,
-    depts: departments.filter((d) => d.faculty === f),
-  }));
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {departments.length} گروه آموزشی در {facultyNames.length} دانشکده
-        </p>
-        <Button size="sm" onClick={() => toast.success("افزودن گروه جدید (نمایشی)")}>
-          <Plus className="size-4" /> افزودن گروه
-        </Button>
-      </div>
-
+    <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader><CardTitle className="text-base">تعریف مجتمع جدید</CardTitle></CardHeader>
@@ -128,9 +114,28 @@ function DepartmentsTab() {
             <Button onClick={()=> toast.success("پژوهشکده جدید ثبت شد")}>ثبت پژوهشکده</Button>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader><CardTitle className="text-base">تعریف گروه علمی جدید</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Input placeholder="نام گروه علمی" />
+            <Input placeholder="نام درس" />
+            <Input placeholder="نام استاد" />
+            <Button onClick={()=> toast.success("گروه علمی جدید ثبت شد")}>ثبت گروه</Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle className="text-base">تعریف درس جدید</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Input placeholder="کد درس" />
+            <Input placeholder="نام درس" />
+            <Input placeholder="واحد" />
+            <Button onClick={()=> toast.success("درس جدید ثبت شد")}>ثبت درس</Button>
+          </CardContent>
+        </Card>
       </div>
-
-      <Accordion type="multiple" className="space-y-2">
+    </div>
+  );
+}
         {grouped.map(({ faculty, depts }) => (
           <AccordionItem key={faculty} value={faculty} className="rounded-xl border px-4">
             <AccordionTrigger className="text-base font-bold">
@@ -280,7 +285,25 @@ const statusBadgeClass: Record<string, string> = {
 function ProfessorsTab() {
   return (
     <div className="space-y-6">
-      ...
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">تخصیص درس به استاد</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-4">
+          <Input placeholder="نام استاد" />
+          <Input placeholder="کد درس" />
+          <Input placeholder="نام درس" />
+          <Button onClick={()=> toast.success("درس با موفقیت به استاد تخصیص یافت")}>تخصیص درس</Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">فهرست اساتید</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">جدول اساتید و دروس تخصیصی اینجا نمایش داده می‌شود.</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -308,18 +331,6 @@ function AccountsTab() {
           <Input placeholder="شماره دانشجویی" />
           <Input placeholder="ایمیل دانشگاهی" />
           <Button onClick={()=> toast.success("حساب دانشجو ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب دانشجو</Button>
-        </CardContent>
-      </Card>
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><GraduationCap className="size-4"/> تعریف درس برای استاد</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-4">
-          <Input placeholder="نام استاد" />
-          <Input placeholder="کد درس" />
-          <Input placeholder="نام درس" />
-          <Input placeholder="واحد" />
-          <Button onClick={()=> toast.success("درس برای استاد تعریف شد")}>ثبت درس</Button>
         </CardContent>
       </Card>
     </div>
