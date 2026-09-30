@@ -245,18 +245,15 @@ function CourseDetailSidebar({ course }: { course: Course }) {
       <CardContent className="space-y-4">
         {isProfessor && (
           <div className="space-y-3">
+            <p className="text-xs font-semibold">تعریف لینک کلاس جدید برای این درس</p>
             <div className="space-y-2">
-              <p className="text-xs font-medium flex items-center gap-1"><Link2 className="size-3"/> لینک ورود به کلاس</p>
-              <div className="flex gap-2">
-                <Input value={link} onChange={e=>setLink(e.target.value)} placeholder="https://..." />
-                <Button size="sm" onClick={()=> toast.success("لینک کلاس ذخیره شد")}>ذخیره</Button>
+              <Input value={link} onChange={e=>setLink(e.target.value)} placeholder="لینک کلاس جدید" />
+              <div className="grid grid-cols-2 gap-2">
+                <Input type="date" placeholder="روز" />
+                <Input type="time" placeholder="ساعت" />
               </div>
+              <Button size="sm" className="w-full" onClick={()=> toast.success(`لینک کلاس برای ${course.title} در تاریخ انتخابی ایجاد شد و برای دانشجویان نمایش داده می‌شود`)}>ایجاد لینک جدید</Button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Input type="date" placeholder="روز کلاس" />
-              <Input type="time" placeholder="ساعت کلاس" />
-            </div>
-            <Button size="sm" className="w-full" onClick={()=> toast.success("جلسه کلاس ایجاد شد و لینک برای دانشجویان نمایش داده می‌شود")}>ایجاد لینک کلاس</Button>
           </div>
         )}
         <Tabs defaultValue="slides">
