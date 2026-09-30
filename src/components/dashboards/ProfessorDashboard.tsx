@@ -1,49 +1,33 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { Users, ClipboardCheck, CalendarCheck, UserCheck, Save } from "lucide-react";
-import { toast } from "sonner";
-import { courses, assignments, exams, studentsList } from "@/lib/mock-data";
+import { BookOpen, Users, ClipboardCheck, CalendarClock, FileText } from "lucide-react";
+import { courses, assignments, exams, notifications, classSessions } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Switch } from "@/components/ui/switch";
-import { UpcomingSessions } from "@/components/classroom/UpcomingSessions";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
+function formatSessionTime(s: typeof classSessions[number]) {
+  return `${s.date} — ${s.time}`;
+}
 
 export function ProfessorDashboard() {
-  const [attendance, setAttendance] = React.useState<Record<string, boolean>>(
-    Object.fromEntries(studentsList.map((s) => [s.id, s.present])),
-  );
-  const [marks, setMarks] = React.useState<Record<string, string>>({});
-  const presentCount = Object.values(attendance).filter(Boolean).length;
+  const activeCourses = courses.length;
+  const totalStudents = courses.reduce((acc, c) => acc + c.students, 0);
+  const pendingAssignments = assignments.filter(a => a.status === "ارسال شده" || a.status === "در انتظار ارسال").length;
+  const upcomingExams = exams.filter(e => e.status === "برنامه‌ریزی شده").length;
+
+  const upcomingClasses = classSessions.slice(0, 5);
+  const pendingReview = assignments.slice(0, 5);
 
   return (
     <div className="grid gap-5 xl:grid-cols-3">
       <div className="space-y-5 xl:col-span-2">
         <div className="grid gap-4 sm:grid-cols-4">
           {[
-            { label: "دروس این ترم", value: "۵", icon: CalendarCheck },
-            { label: "کل دانشجویان", value: "۳۲۰", icon: Users },
-            { label: "تکالیف در انتظار تصحیح", value: "۳", icon: ClipboardCheck },
-            { label: "آزمون‌های فعال", value: "۲", icon: UserCheck },
+            { label: "تعداد درس‌های فعال", value: String(activeCourses), icon: BookOpen },
+            { label: "تعداد دانشجویان", value: String(totalStudents), icon: Users },
+            { label: "تکالیف در انتظار بررسی", value: String(pendingAssignments), icon: ClipboardCheck },
+            { label: "آزمون‌های پیش‌رو", value: String(upcomingExams), icon: CalendarClock },
           ].map(({ label, value, icon: Icon }) => (
             <Card key={label}>
               <CardContent className="flex items-center gap-3 p-4">
@@ -59,61 +43,46 @@ export function ProfessorDashboard() {
           ))}
         </div>
 
-        <UpcomingSessions canEditLink />
-
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">لیست درس‌ها و آمار دانشجویان</CardTitle>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-base">کلاس‌های پیش‌رو</CardTitle>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/classroom">همه کلاس‌ها</Link>
+            </Button>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>درس</TableHead>
-                  <TableHead>کد</TableHead>
-                  <TableHead>دانشجو</TableHead>
-                  <TableHead>پیشرفت سرفصل</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {courses.map((c) => (
-                  <TableRow key={c.id}>
-                    <TableCell className="font-medium">{c.title}</TableCell>
-                    <TableCell className="text-muted-foreground">{c.code}</TableCell>
-                    <TableCell>{c.students}</TableCell>
-                    <TableCell className="w-40">
-                      <Progress value={c.progress} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <CardContent className="space-y-3">
+            {upcomingClasses.map(s => (
+              <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-3">
+                <div>
+                  <p className="text-sm font-medium">{s.course}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{formatSessionTime(s)} • {s.course} • {s.professor}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">دانشجو: {courses.find(c=>c.title===s.course)?.students ?? 0}</span>
+                  <a href={`/classroom?session=${s.id}`} className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">🔗 ورود به کلاس</a>
+                  <Button size="sm" variant="outline" onClick={() => { /* مدیریت لینک کلاس */ }}>مدیریت لینک</Button>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">تکالیف نیازمند تصحیح</CardTitle>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-base">تکالیف در انتظار بررسی</CardTitle>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/assignments">همه تکالیف</Link>
+            </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {assignments.slice(0, 4).map((a) => (
-              <div
-                key={a.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-border p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{a.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {a.course} — {a.submissions} از {a.total} پاسخ دریافت شده
-                  </p>
+            {pendingReview.map(a => (
+              <div key={a.id} className="rounded-xl border border-border p-3">
+                <p className="text-sm font-medium">{a.title}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{a.course}</p>
+                <div className="mt-2 flex items-center justify-between text-xs">
+                  <span>تعداد تحویل‌ها: {a.submissions ?? 12}</span>
+                  <Badge variant={a.status === "در انتظار ارسال" ? "default" : "secondary"}>{a.status}</Badge>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => toast.success("صفحه تصحیح تکلیف باز شد (نمایشی)")}
-                >
-                  تصحیح
-                </Button>
               </div>
             ))}
           </CardContent>
@@ -122,116 +91,24 @@ export function ProfessorDashboard() {
 
       <div className="space-y-5">
         <Card>
-          <CardHeader className="flex-row items-center justify-between">
-            <CardTitle className="text-base">حضور و غیاب سریع</CardTitle>
-            <Badge variant="secondary">{presentCount} حاضر</Badge>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              درس مبانی هوش مصنوعی — جلسه امروز ساعت ۱۰:۰۰
-            </p>
-            {studentsList.map((s) => (
-              <div key={s.id} className="flex items-center justify-between gap-2">
-                <span className="min-w-0">
-                  <span className="block truncate text-sm">{s.name}</span>
-                  <span className="block text-[11px] text-muted-foreground">{s.id}</span>
-                </span>
-                <Switch
-                  checked={!!attendance[s.id]}
-                  onCheckedChange={(v) => setAttendance((p) => ({ ...p, [s.id]: v }))}
-                />
-              </div>
-            ))}
-            <Button
-              className="w-full"
-              onClick={() => toast.success(`حضور و غیاب ثبت شد — ${presentCount} حاضر`)}
-            >
-              ثبت حضور و غیاب
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
           <CardHeader>
-            <CardTitle className="text-base">ثبت سریع نمرات</CardTitle>
+            <CardTitle className="text-base">اعلان‌های مهم</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <Save className="size-4" /> فرم ثبت نمره
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>ثبت نمره میان‌ترم — مبانی هوش مصنوعی</DialogTitle>
-                  <DialogDescription>نمره از ۲۰ را برای هر دانشجو وارد کنید.</DialogDescription>
-                </DialogHeader>
-                <div className="max-h-72 space-y-2 overflow-y-auto scrollbar-thin">
-                  {studentsList.map((s) => (
-                    <div key={s.id} className="flex items-center gap-3">
-                      <span className="flex-1 truncate text-sm">{s.name}</span>
-                      <Input
-                        className="w-24"
-                        inputMode="decimal"
-                        placeholder="۰ تا ۲۰"
-                        value={marks[s.id] ?? ""}
-                        onChange={(e) => setMarks((p) => ({ ...p, [s.id]: e.target.value }))}
-                      />
-                    </div>
-                  ))}
+            {notifications.slice(0, 6).map(n => (
+              <div key={n.id} className="rounded-xl border border-border p-3">
+                <div className="flex items-start gap-2">
+                  <FileText className="size-4 mt-0.5 text-muted-foreground" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm leading-6">{n.title}</p>
+                    <p className="text-[11px] text-muted-foreground">{n.time}</p>
+                  </div>
+                  {n.unread && <Badge variant="default" className="text-[10px]">جدید</Badge>}
                 </div>
-                <DialogFooter>
-                  <Button onClick={() => toast.success("نمرات با موفقیت ثبت شد (نمایشی)")}>
-                    ثبت نهایی نمرات
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Button asChild variant="ghost" className="w-full">
-              <Link to="/grades">مشاهده جدول نمرات</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">ابزارهای تدریس</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            <Button asChild size="sm" variant="outline">
-              <Link to="/question-bank">بانک سؤال</Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link to="/live-polls">نظرسنجی حین تدریس</Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link to="/at-risk-students">دانشجویان کم‌فعال</Link>
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link to="/send-notification">ارسال اعلان</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">مدیریت آزمون‌ها</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {exams.map((e) => (
-              <div key={e.id} className="rounded-xl border border-border p-3">
-                <p className="text-sm font-bold">{e.course}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {e.type} — {e.questions} سوال — {e.date}
-                </p>
-                <Badge className="mt-2" variant="secondary">
-                  {e.status}
-                </Badge>
               </div>
             ))}
             <Button asChild variant="outline" className="w-full">
-              <Link to="/exams">مدیریت کامل آزمون‌ها</Link>
+              <Link to="/send-notification">مشاهده همه اعلان‌ها</Link>
             </Button>
           </CardContent>
         </Card>
