@@ -54,7 +54,7 @@ const navItems: NavItem[] = [
   { to: "/courses", label: "درس‌های من", icon: BookOpen, roles: ["student", "professor"] },
   { to: "/assignments", label: "تکالیف", icon: ClipboardList, roles: ["student", "professor"] },
   { to: "/exams", label: "آزمون‌ها", icon: FileCheck2, roles: ["professor"] },
-  { to: "/grades", label: "نمرات", icon: GraduationCap, roles: ["student", "professor"] },
+  { to: "/grades", label: "نمرات", icon: GraduationCap, roles: ["student"] },
   { to: "/classroom", label: "کلاس‌ها", icon: Video, roles: ["student", "professor"] },
   { to: "/classroom", label: "وایت‌برد استاد", icon: Presentation, roles: ["professor"] },
   { to: "/requests", label: "درخواست‌های آموزشی", icon: Inbox, roles: ["student", "admin"] },

@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { RoleProvider } from "../lib/role";
 import { ClassroomProvider } from "../lib/classroom-store";
 import { AssignmentsProvider } from "../lib/assignments-store";
+import { ExamsProvider } from "../lib/exams-store";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -132,9 +133,11 @@ function RootComponent() {
       <RoleProvider>
         <ClassroomProvider>
           <AssignmentsProvider>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-            <Toaster position="top-center" richColors />
+            <ExamsProvider>
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+              <Toaster position="top-center" richColors />
+            </ExamsProvider>
           </AssignmentsProvider>
         </ClassroomProvider>
       </RoleProvider>
