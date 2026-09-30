@@ -109,6 +109,27 @@ function DepartmentsTab() {
         </Button>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader><CardTitle className="text-base">تعریف مجتمع جدید</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Input placeholder="نام مجتمع" />
+            <Input placeholder="نام درس" />
+            <Input placeholder="نام استاد" />
+            <Button onClick={()=> toast.success("مجتمع جدید ثبت شد")}>ثبت مجتمع</Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle className="text-base">تعریف پژوهشکده جدید</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <Input placeholder="نام پژوهشکده" />
+            <Input placeholder="نام درس" />
+            <Input placeholder="نام استاد" />
+            <Button onClick={()=> toast.success("پژوهشکده جدید ثبت شد")}>ثبت پژوهشکده</Button>
+          </CardContent>
+        </Card>
+      </div>
+
       <Accordion type="multiple" className="space-y-2">
         {grouped.map(({ faculty, depts }) => (
           <AccordionItem key={faculty} value={faculty} className="rounded-xl border px-4">
