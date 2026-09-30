@@ -1,18 +1,8 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  Video,
-  ClipboardList,
-  GraduationCap,
-  Bot,
-  Send,
-  Clock,
-  TrendingUp,
-  CheckCircle2,
-} from "lucide-react";
+import { ClipboardList, GraduationCap, Bot, Send, TrendingUp, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  todayClasses,
   assignments,
   grades,
   courses,
@@ -27,13 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { UpcomingSessions } from "@/components/classroom/UpcomingSessions";
 import { cn } from "@/lib/utils";
-
-const statusColor: Record<string, string> = {
-  "درحال برگزاری": "bg-accent text-accent-foreground",
-  "به‌زودی": "bg-secondary text-secondary-foreground",
-  "پایان‌یافته": "bg-muted text-muted-foreground",
-};
 
 export function StudentDashboard() {
   const [q, setQ] = React.useState("");
@@ -61,33 +46,7 @@ export function StudentDashboard() {
           ))}
         </div>
 
-        <Card>
-          <CardHeader className="flex-row items-center justify-between">
-            <CardTitle className="text-base">کلاس‌های امروز</CardTitle>
-            <Badge variant="secondary">۴ جلسه</Badge>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {todayClasses.map((c) => (
-              <div
-                key={c.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-border p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold">{c.course}</p>
-                  <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="size-3.5" /> {c.time} — {c.professor}
-                  </p>
-                </div>
-                <Badge className={cn("shrink-0", statusColor[c.status])}>{c.status}</Badge>
-                <Button asChild size="sm" disabled={c.status === "پایان‌یافته"}>
-                  <Link to="/classroom">
-                    <Video className="size-4" /> ورود به کلاس
-                  </Link>
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <UpcomingSessions canEditLink={false} />
 
         <Card>
           <CardHeader>
@@ -134,27 +93,27 @@ export function StudentDashboard() {
         </Card>
 
         <Card>
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-base">تکالیف تحویلی</CardTitle>
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/assignments">همه</Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {assignments.slice(0, 3).map((a) => (
-                <div key={a.id} className="rounded-xl border border-border p-3">
-                  <p className="text-sm font-medium leading-6">{a.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{a.course}</p>
-                  <div className="mt-2 flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">مهلت: {a.due}</span>
-                    <Badge variant={a.status === "در انتظار ارسال" ? "default" : "secondary"}>
-                      {a.status}
-                    </Badge>
-                  </div>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-base">تکالیف تحویلی</CardTitle>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/assignments">همه</Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {assignments.slice(0, 3).map((a) => (
+              <div key={a.id} className="rounded-xl border border-border p-3">
+                <p className="text-sm font-medium leading-6">{a.title}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{a.course}</p>
+                <div className="mt-2 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">مهلت: {a.due}</span>
+                  <Badge variant={a.status === "در انتظار ارسال" ? "default" : "secondary"}>
+                    {a.status}
+                  </Badge>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
 
       <div className="space-y-5">

@@ -204,6 +204,97 @@ export const todayClasses: TodayClass[] = [
   { id: "t4", course: "زبان تخصصی مهندسی", time: "۰۸:۰۰ - ۰۹:۳۰", professor: "دکتر لیلا شریفی", status: "پایان‌یافته", attendees: 66 },
 ];
 
+/**
+ * جلسهٔ کلاس. هر جلسه یک ردیف مستقل است و لینک خودش را دارد،
+ * چون استاد برای هر جلسه جداگانه لینک تعریف می‌کند.
+ */
+export type ClassSession = {
+  id: string;
+  course: string;
+  professor: string;
+  day: string;
+  date: string;
+  time: string;
+  topic: string;
+  /** لینک اولیه؛ استاد می‌تواند در مرورگر خودش آن را عوض کند. */
+  link: string;
+  live: boolean;
+};
+
+export const classSessions: ClassSession[] = [
+  {
+    id: "s1",
+    course: "مبانی برنامه‌نویسی پیشرفته",
+    professor: "دکتر رضا کریمی",
+    day: "امروز",
+    date: "۱۴۰۵/۰۶/۱۲",
+    time: "۱۰:۰۰ - ۱۱:۳۰",
+    topic: "حلقه‌ها و توابع بازگشتی",
+    link: "https://meet.nine-green.academy/npu-1405",
+    live: true,
+  },
+  {
+    id: "s2",
+    course: "پایگاه داده پیشرفته",
+    professor: "دکتر مریم نجفی",
+    day: "امروز",
+    date: "۱۴۰۵/۰۶/۱۲",
+    time: "۱۳:۳۰ - ۱۵:۰۰",
+    topic: "ایندکس‌ها و بهینه‌سازی کوئری",
+    link: "https://meet.nine-green.academy/db-1405",
+    live: false,
+  },
+  {
+    id: "s3",
+    course: "مبانی هوش مصنوعی",
+    professor: "دکتر رضا کریمی",
+    day: "امروز",
+    date: "۱۴۰۵/۰۶/۱۲",
+    time: "۱۵:۳۰ - ۱۷:۰۰",
+    topic: "یادگیری ماشین و داده‌های آموزشی",
+    link: "https://meet.nine-green.academy/ai-1405",
+    live: false,
+  },
+  {
+    id: "s4",
+    course: "معماری کامپیوتر",
+    professor: "دکتر سعید احمدی",
+    day: "فردا",
+    date: "۱۴۰۵/۰۶/۱۳",
+    time: "۰۸:۰۰ - ۰۹:۳۰",
+    topic: "ریزپردازنده و چند هسته‌ای",
+    link: "https://meet.nine-green.academy/ca-1405",
+    live: false,
+  },
+  {
+    id: "s5",
+    course: "طراحی وب",
+    professor: "دکتر مریم نجفی",
+    day: "پنجشنبه",
+    date: "۱۴۰۵/۰۶/۱۵",
+    time: "۱۰:۰۰ - ۱۱:۳۰",
+    topic: "ریسپانسیو و دسترسی‌پذیری",
+    link: "",
+    live: false,
+  },
+  {
+    id: "s6",
+    course: "امنیت شبکه",
+    professor: "دکتر سعید احمدی",
+    day: "شنبه",
+    date: "۱۴۰۵/۰۶/۱۸",
+    time: "۱۴:۰۰ - ۱۵:۳۰",
+    topic: "رمزنگاری و دیواره آتش",
+    link: "",
+    live: false,
+  },
+];
+
+/** جلساتی که هنوز برگزار نشده‌اند. */
+export const upcomingSessions: ClassSession[] = classSessions.filter(
+  (s) => s.day !== "امروز" || !s.live,
+);
+
 export const weekDays = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه"];
 export const timeSlots = ["۰۸:۰۰", "۱۰:۰۰", "۱۳:۳۰", "۱۵:۳۰"];
 

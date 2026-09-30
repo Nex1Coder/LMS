@@ -1,14 +1,15 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { Video, Users, ClipboardCheck, CalendarCheck, UserCheck, Save } from "lucide-react";
+import { Users, ClipboardCheck, CalendarCheck, UserCheck, Save } from "lucide-react";
 import { toast } from "sonner";
-import { todayClasses, courses, assignments, exams, studentsList } from "@/lib/mock-data";
+import { courses, assignments, exams, studentsList } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
+import { UpcomingSessions } from "@/components/classroom/UpcomingSessions";
 import {
   Dialog,
   DialogContent,
@@ -58,32 +59,7 @@ export function ProfessorDashboard() {
           ))}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">کلاس‌های امروز</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {todayClasses.map((c) => (
-              <div
-                key={c.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl border border-border p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold">{c.course}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {c.time} — حاضرین: {c.attendees} نفر
-                  </p>
-                </div>
-                <Badge variant="secondary">{c.status}</Badge>
-                <Button asChild size="sm">
-                  <Link to="/classroom">
-                    <Video className="size-4" /> شروع کلاس
-                  </Link>
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <UpcomingSessions canEditLink />
 
         <Card>
           <CardHeader>
