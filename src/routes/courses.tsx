@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, Calendar, CheckCircle2, FileDown, PlayCircle, Users, Video } from "lucide-react";
+import { BookOpen, Calendar, CheckCircle2, FileDown, PlayCircle, Users, Video, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { courses } from "@/lib/mock-data";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRole } from "@/lib/role";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/courses")({
   head: () => ({
@@ -226,6 +228,10 @@ function PastSemestersCourses({
 }
 
 function CourseDetailSidebar({ course }: { course: Course }) {
+  const { role } = useRole();
+  const isProfessor = role === "professor";
+  const [link, setLink] = React.useState(course.classLink ?? "");
+
   return (
     <Card className="h-fit lg:sticky lg:top-24">
       <CardHeader>
@@ -234,7 +240,16 @@ function CourseDetailSidebar({ course }: { course: Course }) {
         </CardTitle>
         <p className="text-xs text-muted-foreground">{course.room}</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {isProfessor && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium flex items-center gap-1"><Link2 className="size-3"/> لینک ورود به کلاس</p>
+            <div className="flex gap-2">
+              <Input value={link} onChange={e=>setLink(e.target.value)} placeholder="https://..." />
+              <Button size="sm" onClick={()=> toast.success("لینک کلاس ذخیره شد")}>ذخیره</Button>
+            </div>
+          </div>
+        )}
         <Tabs defaultValue="slides">
           <TabsList className="w-full">
             <TabsTrigger value="slides" className="flex-1">
