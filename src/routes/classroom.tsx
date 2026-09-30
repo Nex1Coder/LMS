@@ -64,7 +64,7 @@ function ClassroomPage() {
     ? false
     : isProfessor
       ? true
-      : role === "student" && (grantedPresenter || grantedAdmin);
+      : role === "student" && (grantedPresenter);
   const readOnly = !canPresent;
 
   const send = () => {

@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { RoleProvider } from "../lib/role";
 import { ClassroomProvider } from "../lib/classroom-store";
+import { AssignmentsProvider } from "../lib/assignments-store";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -130,9 +131,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <RoleProvider>
         <ClassroomProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-          <Toaster position="top-center" richColors />
+          <AssignmentsProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+            <Toaster position="top-center" richColors />
+          </AssignmentsProvider>
         </ClassroomProvider>
       </RoleProvider>
     </QueryClientProvider>

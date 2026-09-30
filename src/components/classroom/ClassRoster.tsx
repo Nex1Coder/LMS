@@ -145,18 +145,6 @@ export function ClassRoster({
                       }}
                     />
                   </label>
-                  <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                    ادمین
-                    <Switch
-                      checked={admin}
-                      onCheckedChange={() => {
-                        toggleAdmin(sessionId, s.id);
-                        toast.success(
-                          admin ? `دسترسی ادمین ${s.name} لغو شد` : `${s.name} ادمین شد`,
-                        );
-                      }}
-                    />
-                  </label>
                 </div>
               ) : (
                 <Badge variant={s.present ? "secondary" : "outline"} className="text-[10px]">
