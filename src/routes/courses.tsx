@@ -231,6 +231,8 @@ function CourseDetailSidebar({ course }: { course: Course }) {
   const { role } = useRole();
   const isProfessor = role === "professor";
   const [link, setLink] = React.useState(course.classLink ?? "");
+  const [slideFile, setSlideFile] = React.useState<File | null>(null);
+  const [recFile, setRecFile] = React.useState<File | null>(null);
 
   return (
     <Card className="h-fit lg:sticky lg:top-24">
@@ -260,6 +262,12 @@ function CourseDetailSidebar({ course }: { course: Course }) {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="slides" className="mt-4 space-y-2">
+            {isProfessor && (
+              <div className="flex gap-2">
+                <input type="file" accept=".pdf,.ppt,.pptx" onChange={e=> { if(e.target.files?.[0]) toast.success(`فایل ${e.target.files[0].name} آپلود شد (نمایشی)`); e.currentTarget.value=""; }} className="hidden" id="slide-upload" />
+                <label htmlFor="slide-upload"><Button size="sm" variant="outline" asChild><span>آپلود اسلاید</span></Button></label>
+              </div>
+            )}
             {course.slides.map((s) => (
               <div
                 key={s.title}
@@ -281,6 +289,12 @@ function CourseDetailSidebar({ course }: { course: Course }) {
             ))}
           </TabsContent>
           <TabsContent value="rec" className="mt-4 space-y-2">
+            {isProfessor && (
+              <div className="flex gap-2">
+                <input type="file" accept="video/*,audio/*" onChange={e=> { if(e.target.files?.[0]) toast.success(`جلسه ${e.target.files[0].name} آپلود شد (نمایشی)`); e.currentTarget.value=""; }} className="hidden" id="rec-upload" />
+                <label htmlFor="rec-upload"><Button size="sm" variant="outline" asChild><span>آپلود/ضبط جلسه</span></Button></label>
+              </div>
+            )}
             {course.recordings.map((r) => (
               <div
                 key={r.title}
