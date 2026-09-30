@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Building2, BookOpen, Users, Sparkles, Plus } from "lucide-react";
+import { Building2, BookOpen, Users, Sparkles, Plus, UserPlus, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import {
@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/academic-structure")({
@@ -65,6 +66,10 @@ function AcademicStructurePage() {
             <Users className="size-3.5" />
             اساتید و تخصیص درس
           </TabsTrigger>
+          <TabsTrigger value="accounts" className="gap-1.5">
+            <UserPlus className="size-3.5" />
+            ایجاد حساب
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="departments">
@@ -77,6 +82,10 @@ function AcademicStructurePage() {
 
         <TabsContent value="professors">
           <ProfessorsTab />
+        </TabsContent>
+
+        <TabsContent value="accounts">
+          <AccountsTab />
         </TabsContent>
       </Tabs>
     </AppShell>
@@ -250,120 +259,49 @@ const statusBadgeClass: Record<string, string> = {
 function ProfessorsTab() {
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
-        <h3 className="flex items-center gap-2 text-sm font-bold">
-          <Users className="size-4 text-accent" />
-          فهرست اساتید
-        </h3>
-        <Card>
-          <CardContent className="overflow-x-auto scrollbar-thin pt-6">
-            <Table className="min-w-[740px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>نام استاد</TableHead>
-                  <TableHead>گروه</TableHead>
-                  <TableHead>مرتبه</TableHead>
-                  <TableHead>دروس تخصیصی</TableHead>
-                  <TableHead className="min-w-[160px]">ساعات تدریس</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {professors.map((p) => {
-                  const hoursPercent = Math.round((p.weeklyHours / p.limit) * 100);
-                  return (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium">{p.name}</TableCell>
-                      <TableCell>{p.department}</TableCell>
-                      <TableCell>
-                        <Badge className={cn("text-[10px]", degreeBadgeClass[p.degree])}>
-                          {p.degree}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {p.courses.map((c) => (
-                            <Badge key={c} variant="outline" className="text-[10px]">
-                              {c}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-muted-foreground">
-                              {p.weeklyHours} از {p.limit} ساعت
-                            </span>
-                            <span className="font-semibold">{hoursPercent}٪</span>
-                          </div>
-                          <Progress value={hoursPercent} className="h-1.5" />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+      ...
+    </div>
+  );
+}
 
+function AccountsTab() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="size-4 text-accent" />
-              تشکیل خودکار کلاس‌ها
-            </CardTitle>
-            <Button size="sm" onClick={() => toast.success("گروه‌های کلاسی تشکیل شد")}>
-              <Sparkles className="size-4" /> اجرای تشکیل کلاس
-            </Button>
-          </div>
+          <CardTitle className="flex items-center gap-2">ایجاد حساب استاد</CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto scrollbar-thin">
-          <Table className="min-w-[600px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>درس</TableHead>
-                <TableHead>گروه</TableHead>
-                <TableHead>دانشجو / ظرفیت</TableHead>
-                <TableHead>وضعیت</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {formedClasses.map((cls) => (
-                <TableRow key={cls.id}>
-                  <TableCell className="font-medium">{cls.course}</TableCell>
-                  <TableCell>{cls.group}</TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">
-                          {cls.students} از {cls.capacity}
-                        </span>
-                        <span className="font-semibold">
-                          {cls.capacity > 0 ? Math.round((cls.students / cls.capacity) * 100) : 0}٪
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          cls.capacity > 0 ? Math.round((cls.students / cls.capacity) * 100) : 0
-                        }
-                        className="h-1.5"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={cn("text-[10px]", statusBadgeClass[cls.status])}>
-                      {cls.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام کامل" />
+          <Input placeholder="ایمیل دانشگاهی" />
+          <Input placeholder="شماره پرسنلی" />
+          <Button onClick={()=> toast.success("حساب استاد ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب استاد</Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">ایجاد حساب دانشجو</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام کامل" />
+          <Input placeholder="شماره دانشجویی" />
+          <Input placeholder="ایمیل دانشگاهی" />
+          <Button onClick={()=> toast.success("حساب دانشجو ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب دانشجو</Button>
+        </CardContent>
+      </Card>
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><GraduationCap className="size-4"/> تعریف درس برای استاد</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-4">
+          <Input placeholder="نام استاد" />
+          <Input placeholder="کد درس" />
+          <Input placeholder="نام درس" />
+          <Input placeholder="واحد" />
+          <Button onClick={()=> toast.success("درس برای استاد تعریف شد")}>ثبت درس</Button>
         </CardContent>
       </Card>
     </div>
   );
 }
+
