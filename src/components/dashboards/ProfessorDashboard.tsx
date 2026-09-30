@@ -1,10 +1,19 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Users, ClipboardCheck, CalendarClock, FileText, Activity } from "lucide-react";
+import { BookOpen, Users, ClipboardCheck, CalendarClock, FileText, Activity, Link2 } from "lucide-react";
 import { courses, assignments, exams, notifications, classSessions, studentsList } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 function formatSessionTime(s: typeof classSessions[number]) {
   return `${s.date} — ${s.time}`;
@@ -68,7 +77,18 @@ export function ProfessorDashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">دانشجو: {courses.find(c=>c.title===s.course)?.students ?? 0}</span>
                   <a href={`/classroom?session=${s.id}`} className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">🔗 ورود به کلاس</a>
-                  <Button size="sm" variant="outline" onClick={() => { /* مدیریت لینک کلاس */ }}>مدیریت لینک</Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">مدیریت لینک</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader><DialogTitle>تعریف لینک کلاس</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <Input placeholder="https://..." />
+                        <Button className="w-full" onClick={()=> toast.success("لینک کلاس جدید تعریف شد")}>ذخیره لینک</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             ))}
