@@ -96,36 +96,15 @@ function DepartmentsTab() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader><CardTitle className="text-base">تعریف مجتمع و درس داخل آن</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">تعریف ساختار آموزشی</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <Input placeholder="نام مجتمع" />
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Input placeholder="نام مجتمع" />
+            <Input placeholder="نام پژوهشکده" />
             <Input placeholder="نام درس" />
             <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("درس برای مجتمع ثبت و به استاد تخصیص یافت")}>ثبت درس در مجتمع</Button>
           </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader><CardTitle className="text-base">تعریف پژوهشکده و درس داخل آن</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="نام پژوهشکده" />
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Input placeholder="نام درس" />
-            <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("درس برای پژوهشکده ثبت و به استاد تخصیص یافت")}>ثبت درس در پژوهشکده</Button>
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader><CardTitle className="text-base">تعریف گروه علمی و درس داخل آن</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="نام گروه علمی" />
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Input placeholder="نام درس" />
-            <Input placeholder="نام استاد" />
-            <Button onClick={()=> toast.success("درس برای گروه علمی ثبت و به استاد تخصیص یافت")}>ثبت درس در گروه</Button>
-          </div>
+          <Button onClick={()=> toast.success("ساختار ثبت شد و درس به استاد تخصیص یافت")}>ثبت ساختار و تخصیص درس</Button>
         </CardContent>
       </Card>
       <Card>
