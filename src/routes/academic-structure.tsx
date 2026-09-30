@@ -136,59 +136,6 @@ function DepartmentsTab() {
     </div>
   );
 }
-        {grouped.map(({ faculty, depts }) => (
-          <AccordionItem key={faculty} value={faculty} className="rounded-xl border px-4">
-            <AccordionTrigger className="text-base font-bold">
-              <span className="flex items-center gap-2">
-                <Building2 className="size-4 text-accent" />
-                {faculty}
-                <Badge variant="secondary" className="text-[10px]">
-                  {depts.length} گروه
-                </Badge>
-              </span>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-2">
-              {depts.map((dept) => (
-                <Card key={dept.id}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-sm">{dept.name}</CardTitle>
-                      <Badge variant="outline" className="text-[10px]">
-                        مدیر گروه: {dept.head}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>رشته</TableHead>
-                          <TableHead>مقطع</TableHead>
-                          <TableHead>تعداد دانشجو</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {dept.fields.map((f) => (
-                          <TableRow key={f.id}>
-                            <TableCell className="font-medium">{f.name}</TableCell>
-                            <TableCell>
-                              <Badge variant="secondary">{f.level}</Badge>
-                            </TableCell>
-                            <TableCell>{f.students.toLocaleString("fa-IR")}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              ))}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </div>
-  );
-}
 
 function CoursesTab() {
   return (
