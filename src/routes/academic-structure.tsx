@@ -24,7 +24,7 @@ export const Route = createFileRoute("/academic-structure")({
 
 function AcademicStructurePage() {
   return (
-    <AppShell title="مدیریت ساختار آموزشی" subtitle="مدیریت ساختار سازمانی، دروس، اساتید و دانشجویان، تشکیل کلاس و گزارش">
+    <AppShell title="مدیریت ساختار آموزشی - NEW" subtitle="مدیریت ساختار سازمانی، دروس، اساتید و دانشجویان، تشکیل کلاس و گزارش - v2">
       <Tabs defaultValue="org" dir="rtl">
         <TabsList className="mb-5">
           <TabsTrigger value="org" className="gap-1.5"><Building2 className="size-3.5" />ساختار سازمانی</TabsTrigger>
