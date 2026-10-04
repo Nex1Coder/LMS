@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Building2, BookOpen, Users, Sparkles, UserPlus, GraduationCap, Plus } from "lucide-react";
+// force redeploy 2026-10-04
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { courseCatalog } from "@/lib/mock-data";
