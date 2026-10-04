@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { courses } from "@/lib/mock-data";
 import type { Course } from "@/lib/mock-data";
+import { mockBBBJoinLink } from "@/lib/bbbService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -131,7 +132,7 @@ function CurrentSemesterCourses({
                   <Progress value={c.progress} />
                 </div>
                 <Button asChild size="sm" className="w-full">
-                  <Link to="/classroom">ورود به کلاس مجازی</Link>
+                  <a href={mockBBBJoinLink(c.code, c.id)} target="_blank" rel="noreferrer">ورود به کلاس مجازی</a>
                 </Button>
               </CardContent>
             </Card>
