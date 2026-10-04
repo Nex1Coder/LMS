@@ -50,78 +50,70 @@ function AcademicStructurePage() {
   return (
     <AppShell
       title="مدیریت ساختار آموزشی"
-      subtitle="مدیریت ساختار سازمانی، دروس، اساتید و دانشجویان، تشکیل کلاس و گزارش"
+      subtitle="تعریف دانشکده، گروه، رشته، مقطع، دروس، اساتید و تشکیل کلاس‌ها"
     >
-      <Tabs defaultValue="org" dir="rtl">
+      <Tabs defaultValue="departments" dir="rtl">
         <TabsList className="mb-5">
-          <TabsTrigger value="org" className="gap-1.5">
+          <TabsTrigger value="departments" className="gap-1.5">
             <Building2 className="size-3.5" />
-            ساختار سازمانی
+            مجتمع‌ها
           </TabsTrigger>
           <TabsTrigger value="courses" className="gap-1.5">
             <BookOpen className="size-3.5" />
             تعریف دروس
           </TabsTrigger>
-          <TabsTrigger value="users" className="gap-1.5">
+          <TabsTrigger value="professors" className="gap-1.5">
             <Users className="size-3.5" />
-            اساتید و دانشجویان
+            اساتید و تخصیص درس
           </TabsTrigger>
-          <TabsTrigger value="classes" className="gap-1.5">
-            <GraduationCap className="size-3.5" />
-            تشکیل کلاس‌ها
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="gap-1.5">
-            <Sparkles className="size-3.5" />
-            گزارش‌گیری
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="gap-1.5">
+          <TabsTrigger value="accounts" className="gap-1.5">
             <UserPlus className="size-3.5" />
-            تنظیمات سامانه
+            ایجاد حساب
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="org">
-          <OrgTab />
+        <TabsContent value="departments">
+          <DepartmentsTab />
         </TabsContent>
 
         <TabsContent value="courses">
           <CoursesTab />
         </TabsContent>
 
-        <TabsContent value="users">
-          <UsersTab />
+        <TabsContent value="professors">
+          <ProfessorsTab />
         </TabsContent>
 
-        <TabsContent value="classes">
-          <ClassesTab />
-        </TabsContent>
-
-        <TabsContent value="reports">
-          <ReportsTab />
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <SettingsTab />
+        <TabsContent value="accounts">
+          <AccountsTab />
         </TabsContent>
       </Tabs>
     </AppShell>
   );
 }
 
-function OrgTab() {
+function DepartmentsTab() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader><CardTitle className="text-base">مدیریت ساختار سازمانی</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">تعریف ساختار آموزشی</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Input placeholder="نام مجتمع/دانشکده" />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Input placeholder="نام مجتمع" />
             <Input placeholder="نام پژوهشکده" />
-            <Input placeholder="نام گروه علمی" />
-            <Input placeholder="نام رشته" />
-            <Input placeholder="مقطع" />
-            <Button onClick={()=> toast.success("ساختار سازمانی ثبت شد")}>ثبت ساختار</Button>
+            <Input placeholder="نام درس" />
+            <Input placeholder="نام استاد" />
           </div>
+          <Button onClick={()=> toast.success("ساختار ثبت شد و درس به استاد تخصیص یافت")}>ثبت ساختار و تخصیص درس</Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">تعریف درس مستقل</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="کد درس" />
+          <Input placeholder="نام درس" />
+          <Input placeholder="واحد" />
+          <Button onClick={()=> toast.success("درس جدید ثبت شد")}>ثبت درس</Button>
         </CardContent>
       </Card>
     </div>
@@ -130,28 +122,13 @@ function OrgTab() {
 
 function CoursesTab() {
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader><CardTitle className="text-base">تعریف دروس و پیش‌نیازها</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Input placeholder="کد درس" />
-            <Input placeholder="نام درس" />
-            <Input placeholder="واحد" />
-            <Input placeholder="ظرفیت" />
-            <Input placeholder="سطح/مقطع" />
-            <Input placeholder="پیش‌نیاز" />
-          </div>
-          <Button onClick={()=> toast.success("درس ثبت شد")}>ثبت درس</Button>
-        </CardContent>
-      </Card>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{courseCatalog.length} درس تعریف‌شده</p>
-          <Button size="sm" onClick={() => toast.success("تعریف درس جدید (نمایشی)")}>
-            <Plus className="size-4" /> تعریف درس جدید
-          </Button>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">{courseCatalog.length} درس تعریف‌شده</p>
+        <Button size="sm" onClick={() => toast.success("تعریف درس جدید (نمایشی)")}>
+          <Plus className="size-4" /> تعریف درس جدید
+        </Button>
+      </div>
 
       <Card>
         <CardContent className="overflow-x-auto scrollbar-thin pt-6">
@@ -223,46 +200,6 @@ function CoursesTab() {
   );
 }
 
-function ReportsTab() {
-  return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <Card>
-        <CardHeader><CardTitle className="text-base">آمار ثبت‌نام</CardTitle></CardHeader>
-        <CardContent><p className="text-sm text-muted-foreground">نمودار ثبت‌نام دانشجویان در کلاس‌ها.</p></CardContent>
-      </Card>
-      <Card>
-        <CardHeader><CardTitle className="text-base">تراکم کلاس</CardTitle></CardHeader>
-        <CardContent><p className="text-sm text-muted-foreground">نمایش پر بودن کلاس‌ها و ظرفیت.</p></CardContent>
-      </Card>
-      <Card>
-        <CardHeader><CardTitle className="text-base">عملکرد اساتید</CardTitle></CardHeader>
-        <CardContent><p className="text-sm text-muted-foreground">گزارش حضور، تکالیف و نمره‌دهی اساتید.</p></CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function SettingsTab() {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader><CardTitle className="text-base">تنظیمات سامانه</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Input placeholder="نام نقش" />
-            <Input placeholder="دسترسی‌ها" />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Input placeholder="قالب/تم" />
-            <Input placeholder="تنظیمات اعلان" />
-          </div>
-          <Button onClick={()=> toast.success("تنظیمات ذخیره شد")}>ذخیره تنظیمات</Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
 const degreeBadgeClass: Record<string, string> = {
   استادیار: "bg-blue-100 text-blue-700",
   دانشیار: "bg-violet-100 text-violet-700",
@@ -275,57 +212,55 @@ const statusBadgeClass: Record<string, string> = {
   "تشکیل نشد": "bg-muted text-muted-foreground",
 };
 
-function ClassesTab() {
+function ProfessorsTab() {
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">تشکیل کلاس‌ها</CardTitle>
+          <CardTitle className="flex items-center gap-2">تخصیص درس به استاد</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-4">
           <Input placeholder="نام استاد" />
           <Input placeholder="کد درس" />
-          <Input placeholder="ظرفیت کلاس" />
-          <Input placeholder="زمان‌بندی کلاس" />
-          <Button onClick={()=> toast.success("کلاس تشکیل و درس به استاد تخصیص یافت")} className="sm:col-span-4">تخصیص درس و ثبت کلاس</Button>
+          <Input placeholder="نام درس" />
+          <Button onClick={()=> toast.success("درس با موفقیت به استاد تخصیص یافت")}>تخصیص درس</Button>
         </CardContent>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">فهرست کلاس‌های تشکیل‌شده</CardTitle>
+          <CardTitle className="text-base">فهرست اساتید</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">جدول کلاس‌ها با ظرفیت و زمان‌بندی.</p>
+          <p className="text-sm text-muted-foreground">جدول اساتید و دروس تخصیصی اینجا نمایش داده می‌شود.</p>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-function UsersTab() {
+function AccountsTab() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">مدیریت اساتید و دانشجویان</CardTitle>
+          <CardTitle className="flex items-center gap-2">ایجاد حساب استاد</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <Input placeholder="نام کامل" />
           <Input placeholder="ایمیل دانشگاهی" />
-          <Input placeholder="شماره پرسنلی / دانشجویی" />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Button onClick={()=> toast.success("حساب ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب</Button>
-            <Button variant="outline" onClick={()=> toast.success("احراز هویت انجام شد")}>احراز هویت</Button>
-          </div>
-          <p className="text-xs text-muted-foreground">گروه‌بندی و وضعیت در نمای جدول قابل مدیریت است.</p>
+          <Input placeholder="شماره پرسنلی" />
+          <Button onClick={()=> toast.success("حساب استاد ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب استاد</Button>
         </CardContent>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">فهرست کاربران</CardTitle>
+          <CardTitle className="flex items-center gap-2">ایجاد حساب دانشجو</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">جدول اساتید و دانشجویان با امکان گروه‌بندی و تغییر وضعیت.</p>
+        <CardContent className="space-y-3">
+          <Input placeholder="نام کامل" />
+          <Input placeholder="شماره دانشجویی" />
+          <Input placeholder="ایمیل دانشگاهی" />
+          <Button onClick={()=> toast.success("حساب دانشجو ایجاد و اطلاعات ورود ارسال شد")}>ایجاد حساب دانشجو</Button>
         </CardContent>
       </Card>
     </div>
