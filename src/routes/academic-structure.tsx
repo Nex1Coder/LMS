@@ -29,11 +29,11 @@ function AcademicStructurePage() {
       <Tabs defaultValue="dashboard" dir="rtl">
         <TabsList className="mb-5">
           <TabsTrigger value="dashboard" className="gap-1.5"><LayoutDashboard className="size-3.5" />داشبورد</TabsTrigger>
-          <TabsTrigger value="org" className="gap-1.5"><Building2 className="size-3.5" />مدیریت ساختار سازمانی</TabsTrigger>
+          <TabsTrigger value="org" className="gap-1.5"><Building2 className="size-3.5" />ساختار سازمانی</TabsTrigger>
           <TabsTrigger value="courses" className="gap-1.5"><BookOpen className="size-3.5" />تعریف دروس و پیش‌نیازها</TabsTrigger>
-          <TabsTrigger value="users" className="gap-1.5"><Users className="size-3.5" />مدیریت اساتید و دانشجویان</TabsTrigger>
+          <TabsTrigger value="users" className="gap-1.5"><Users className="size-3.5" />اساتید و دانشجویان</TabsTrigger>
           <TabsTrigger value="classes" className="gap-1.5"><GraduationCap className="size-3.5" />تشکیل کلاس‌ها</TabsTrigger>
-          <TabsTrigger value="reports" className="gap-1.5"><Sparkles className="size-3.5" />گزارش‌گیری پایه</TabsTrigger>
+          <TabsTrigger value="reports" className="gap-1.5"><Sparkles className="size-3.5" />گزارش‌گیری</TabsTrigger>
           <TabsTrigger value="settings" className="gap-1.5"><UserPlus className="size-3.5" />تنظیمات سامانه</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
