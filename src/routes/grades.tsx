@@ -53,7 +53,7 @@ export const Route = createFileRoute("/grades")({
 
 function GradesPage() {
   const [text, setText] = React.useState("");
-  const role = useRole();
+  const { role } = useRole();
 
   const isStudent = role === "student";
 
