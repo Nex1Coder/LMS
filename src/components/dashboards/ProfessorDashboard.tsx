@@ -25,8 +25,8 @@ export function ProfessorDashboard() {
   const pendingAssignments = assignments.filter(a => a.status === "ارسال شده" || a.status === "در انتظار ارسال").length;
   const upcomingExams = exams.filter(e => e.status === "برنامه‌ریزی شده").length;
 
-  const upcomingClasses = classSessions.slice(0, 5);
-  const pendingReview = assignments.slice(0, 5);
+  const upcomingClasses = classSessions.slice(0, 2);
+  const pendingReview = assignments.slice(0, 2);
 
   const studentsWithActivity = studentsList.map(s => {
     const attendance = Math.round(60 + Math.random()*40);
@@ -124,7 +124,7 @@ export function ProfessorDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {studentsWithActivity.slice(0, 8).map(s => (
+            {studentsWithActivity.slice(0, 2).map(s => (
               <div key={s.id} className="flex items-center justify-between rounded-xl border border-border p-3 text-xs">
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{s.name}</p>

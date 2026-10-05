@@ -179,7 +179,7 @@ export function AdminDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {requests.map((r) => (
+            {requests.slice(0, 2).map((r) => (
               <div
                 key={r.id}
                 className="flex flex-wrap items-center gap-3 rounded-xl border border-border p-3"
