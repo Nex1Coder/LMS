@@ -34,6 +34,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRole } from "@/lib/role";
 
 export const Route = createFileRoute("/grades")({
   head: () => ({
@@ -52,34 +53,33 @@ export const Route = createFileRoute("/grades")({
 
 function GradesPage() {
   const [text, setText] = React.useState("");
+  const role = useRole();
+
+  const isStudent = role === "student";
 
   return (
     <AppShell title="نمرات و کارنامه" subtitle="کارنامه نیم‌سال ۱۴۰۵-۱ — ۱۴ واحد اخذ شده">
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
+      {isStudent ? (
+        <div className="space-y-5">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-base">جدول نمرات تفکیکی</CardTitle>
+              <CardTitle className="text-base">نمرات تکالیف</CardTitle>
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => toast.success("دریافت کارنامه PDF آغاز شد (نمایشی)")}
+                onClick={() => toast.success("دریافت گزارش تکالیف آغاز شد (نمایشی)")}
               >
-                <Download className="size-4" /> دریافت کارنامه
+                <Download className="size-4" /> دریافت گزارش
               </Button>
             </CardHeader>
             <CardContent className="overflow-x-auto scrollbar-thin">
-              <Table className="min-w-[640px]">
+              <Table className="min-w-[480px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>درس</TableHead>
                     <TableHead>کد</TableHead>
-                    <TableHead>واحد</TableHead>
-                    <TableHead>میان‌ترم</TableHead>
-                    <TableHead>تکالیف</TableHead>
-                    <TableHead>پایان‌ترم</TableHead>
-                    <TableHead>نمره نهایی</TableHead>
-                    <TableHead>وضعیت</TableHead>
+                    <TableHead>نمره تکالیف</TableHead>
+                    <TableHead>اعتراض</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -87,15 +87,37 @@ function GradesPage() {
                     <TableRow key={g.code}>
                       <TableCell className="font-medium">{g.course}</TableCell>
                       <TableCell className="text-muted-foreground">{g.code}</TableCell>
-                      <TableCell>{g.units}</TableCell>
-                      <TableCell>{g.midterm}</TableCell>
                       <TableCell>{g.assignments}</TableCell>
-                      <TableCell>{g.final}</TableCell>
-                      <TableCell className="font-bold text-navy">{g.total}</TableCell>
                       <TableCell>
-                        <Badge variant={g.state === "قبول" ? "secondary" : "default"}>
-                          {g.state}
-                        </Badge>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline">اعتراض</Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>اعتراض به نمره تکالیف - {g.course}</DialogTitle>
+                              <DialogDescription>
+                                دلیل اعتراض خود را به‌صورت دقیق توضیح دهید.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <Textarea
+                              rows={5}
+                              value={text}
+                              onChange={(e) => setText(e.target.value)}
+                              placeholder="مثال: نمره تکلیف شماره ۲ به اشتباه ثبت شده است…"
+                            />
+                            <DialogFooter>
+                              <Button
+                                onClick={() => {
+                                  toast.success("درخواست تجدیدنظر برای استاد ارسال شد");
+                                  setText("");
+                                }}
+                              >
+                                ارسال اعتراض
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -103,94 +125,145 @@ function GradesPage() {
               </Table>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">روند معدل نیم‌سال‌ها</CardTitle>
-            </CardHeader>
-            <CardContent className="h-64" dir="ltr">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={gpaHistory}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="term" tick={{ fontSize: 11 }} />
-                  <YAxis domain={[12, 20]} tick={{ fontSize: 11 }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="gpa" stroke="var(--chart-2)" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
         </div>
+      ) : (
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="space-y-5 lg:col-span-2">
+            <Card>
+              <CardHeader className="flex-row items-center justify-between">
+                <CardTitle className="text-base">جدول نمرات تفکیکی</CardTitle>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toast.success("دریافت کارنامه PDF آغاز شد (نمایشی)")}
+                >
+                  <Download className="size-4" /> دریافت کارنامه
+                </Button>
+              </CardHeader>
+              <CardContent className="overflow-x-auto scrollbar-thin">
+                <Table className="min-w-[640px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>درس</TableHead>
+                      <TableHead>کد</TableHead>
+                      <TableHead>واحد</TableHead>
+                      <TableHead>میان‌ترم</TableHead>
+                      <TableHead>تکالیف</TableHead>
+                      <TableHead>پایان‌ترم</TableHead>
+                      <TableHead>نمره نهایی</TableHead>
+                      <TableHead>وضعیت</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {grades.map((g) => (
+                      <TableRow key={g.code}>
+                        <TableCell className="font-medium">{g.course}</TableCell>
+                        <TableCell className="text-muted-foreground">{g.code}</TableCell>
+                        <TableCell>{g.units}</TableCell>
+                        <TableCell>{g.midterm}</TableCell>
+                        <TableCell>{g.assignments}</TableCell>
+                        <TableCell>{g.final}</TableCell>
+                        <TableCell className="font-bold text-navy">{g.total}</TableCell>
+                        <TableCell>
+                          <Badge variant={g.state === "قبول" ? "secondary" : "default"}>
+                            {g.state}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
 
-        <div className="space-y-5">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">خلاصه وضعیت تحصیلی</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {[
-                ["معدل نیم‌سال جاری", "۱۷٫۰۵"],
-                ["معدل کل", "۱۷٫۴۲"],
-                ["واحد گذرانده", "۸۶"],
-                ["واحد باقی‌مانده", "۵۴"],
-                ["رتبه در ورودی", "۱۲ از ۱۴۰"],
-              ].map(([k, v]) => (
-                <div key={k} className="flex items-center justify-between">
-                  <span className="text-muted-foreground">{k}</span>
-                  <span className="font-bold">{v}</span>
-                </div>
-              ))}
-              <p className="flex items-center gap-1 pt-2 text-xs text-accent-foreground/70">
-                <TrendingUp className="size-3.5" /> معدل شما نسبت به ترم قبل ۰٫۵ نمره بهبود یافته
-                است.
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">روند معدل نیم‌سال‌ها</CardTitle>
+              </CardHeader>
+              <CardContent className="h-64" dir="ltr">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={gpaHistory}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="term" tick={{ fontSize: 11 }} />
+                    <YAxis domain={[12, 20]} tick={{ fontSize: 11 }} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="gpa" stroke="var(--chart-2)" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <AlertCircle className="size-4 text-accent" /> اعتراض به نمره
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-3 text-xs leading-6 text-muted-foreground">
-                مهلت ثبت اعتراض تا ۷ روز پس از اعلام نمره است. پاسخ استاد در همین صفحه نمایش داده
-                می‌شود.
-              </p>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="w-full">ثبت درخواست تجدیدنظر</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>درخواست تجدیدنظر نمره</DialogTitle>
-                    <DialogDescription>
-                      درس و دلیل اعتراض خود را به‌صورت دقیق توضیح دهید.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Textarea
-                    rows={5}
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="مثال: در سوال ۳ آزمون میان‌ترم آمار، پاسخ صحیح ثبت نشده است…"
-                  />
-                  <DialogFooter>
-                    <Button
-                      onClick={() => {
-                        toast.success("درخواست تجدیدنظر برای استاد درس ارسال شد");
-                        setText("");
-                      }}
-                    >
-                      ارسال درخواست
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
+          <div className="space-y-5">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">خلاصه وضعیت تحصیلی</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                {[
+                  ["معدل نیم‌سال جاری", "۱۷٫۰۵"],
+                  ["معدل کل", "۱۷٫۴۲"],
+                  ["واحد گذرانده", "۸۶"],
+                  ["واحد باقی‌مانده", "۵۴"],
+                  ["رتبه در ورودی", "۱۲ از ۱۴۰"],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span className="text-muted-foreground">{k}</span>
+                    <span className="font-bold">{v}</span>
+                  </div>
+                ))}
+                <p className="flex items-center gap-1 pt-2 text-xs text-accent-foreground/70">
+                  <TrendingUp className="size-3.5" /> معدل شما نسبت به ترم قبل ۰٫۵ نمره بهبود یافته
+                  است.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <AlertCircle className="size-4 text-accent" /> اعتراض به نمره
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-3 text-xs leading-6 text-muted-foreground">
+                  مهلت ثبت اعتراض تا ۷ روز پس از اعلام نمره است. پاسخ استاد در همین صفحه نمایش داده
+                  می‌شود.
+                </p>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full">ثبت درخواست تجدیدنظر</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>درخواست تجدیدنظر نمره</DialogTitle>
+                      <DialogDescription>
+                        درس و دلیل اعتراض خود را به‌صورت دقیق توضیح دهید.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Textarea
+                      rows={5}
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="مثال: در سوال ۳ آزمون میان‌ترم آمار، پاسخ صحیح ثبت نشده است…"
+                    />
+                    <DialogFooter>
+                      <Button
+                        onClick={() => {
+                          toast.success("درخواست تجدیدنظر برای استاد درس ارسال شد");
+                          setText("");
+                        }}
+                      >
+                        ارسال درخواست
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
     </AppShell>
   );
 }
