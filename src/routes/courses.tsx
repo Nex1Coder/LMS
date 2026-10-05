@@ -30,8 +30,11 @@ export const Route = createFileRoute("/courses")({
 const CURRENT_SEMESTER = "۱۴۰۵-۱";
 
 function CoursesPage() {
-  const currentCourses = courses.filter((c) => c.semester === CURRENT_SEMESTER);
-  const pastCourses = courses.filter((c) => c.semester !== CURRENT_SEMESTER);
+  const { role } = useRole();
+  const isProfessor = role === "professor";
+  const professorFilter = isProfessor ? (c: Course) => c.professor === "دکتر مریم حورعلی" : () => true;
+  const currentCourses = courses.filter((c) => c.semester === CURRENT_SEMESTER && professorFilter(c));
+  const pastCourses = courses.filter((c) => c.semester !== CURRENT_SEMESTER && professorFilter(c));
 
   const [selected, setSelected] = React.useState<string>(currentCourses[0]?.id ?? "");
   const course = courses.find((c) => c.id === selected);
