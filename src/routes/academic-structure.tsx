@@ -1,5 +1,6 @@
+// v2ئتادنمتدنم.
 import { createFileRoute } from "@tanstack/react-router";
-import { Building2, BookOpen, Users, Sparkles, UserPlus, GraduationCap, Plus } from "lucide-react";
+import { Building2, BookOpen, Users, Sparkles, UserPlus, GraduationCap, Plus, LayoutDashboard } from "lucide-react";
 // force redeploy 2026-10-04
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
@@ -25,8 +26,9 @@ export const Route = createFileRoute("/academic-structure")({
 function AcademicStructurePage() {
   return (
     <AppShell title="مدیریت ساختار آموزشی - NEW" subtitle="مدیریت ساختار سازمانی، دروس، اساتید و دانشجویان، تشکیل کلاس و گزارش - v2">
-      <Tabs defaultValue="org" dir="rtl">
+      <Tabs defaultValue="dashboard" dir="rtl">
         <TabsList className="mb-5">
+          <TabsTrigger value="dashboard" className="gap-1.5"><LayoutDashboard className="size-3.5" />داشبورد</TabsTrigger>
           <TabsTrigger value="org" className="gap-1.5"><Building2 className="size-3.5" />ساختار سازمانی</TabsTrigger>
           <TabsTrigger value="courses" className="gap-1.5"><BookOpen className="size-3.5" />تعریف دروس</TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5"><Users className="size-3.5" />اساتید و دانشجویان</TabsTrigger>
@@ -34,6 +36,7 @@ function AcademicStructurePage() {
           <TabsTrigger value="reports" className="gap-1.5"><Sparkles className="size-3.5" />گزارش‌گیری</TabsTrigger>
           <TabsTrigger value="settings" className="gap-1.5"><UserPlus className="size-3.5" />تنظیمات سامانه</TabsTrigger>
         </TabsList>
+        <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="org"><OrgTab /></TabsContent>
         <TabsContent value="courses"><CoursesTab /></TabsContent>
         <TabsContent value="users"><UsersTab /></TabsContent>
@@ -42,6 +45,29 @@ function AcademicStructurePage() {
         <TabsContent value="settings"><SettingsTab /></TabsContent>
       </Tabs>
     </AppShell>
+  );
+}
+
+function DashboardTab() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-3">
+      <Card>
+        <CardHeader><CardTitle className="text-base">نمای کلی آموزشی</CardTitle></CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">مجتمع‌ها</span><span className="font-bold">۳</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">پژوهشکده‌ها</span><span className="font-bold">۵</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">گروه‌های علمی</span><span className="font-bold">۱۰</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">رشته‌ها</span><span className="font-bold">۸</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">دروس تعریف‌شده</span><span className="font-bold">۱۲۴</span></div>
+        </CardContent>
+      </Card>
+      <Card className="lg:col-span-2">
+        <CardHeader><CardTitle className="text-base">فعالیت اخیر</CardTitle></CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">خلاصه عملیات اخیر واحد آموزش: ثبت درس جدید، تخصیص استاد، تشکیل کلاس و گزارش‌های ثبت‌نام.</p>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
