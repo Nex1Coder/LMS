@@ -223,6 +223,22 @@ export const courses: Course[] = [
     slides: [{ title: "جلسه ۱ — لایه‌های OSI", size: "۳٫۰ مگابایت" }],
     recordings: [],
   },
+  {
+    id: "ds-001",
+    title: "علم داده",
+    code: "DS-301",
+    professor: "دکتر مریم حورعلی",
+    units: 3,
+    students: 0,
+    progress: 0,
+    nextSession: "یکشنبه / سه‌شنبه ۱۰:۰۰-۱۲:۰۰",
+    room: "کلاس مجازی ۳۰۳",
+    color: "bg-primary",
+    semester: "۱۴۰۵-۱",
+    grade: null,
+    slides: [{ title: "جلسه ۱ — مقدمه علم داده", size: "۳٫۵ مگابایت" }],
+    recordings: [],
+  },
 ];
 
 export type TodayClass = {
