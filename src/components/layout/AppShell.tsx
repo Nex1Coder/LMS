@@ -64,7 +64,7 @@ const navItems: NavItem[] = [
     icon: Users,
     roles: ["professor"],
   },
-  { to: "/send-notification", label: "اعلان‌ها", icon: Bell, roles: ["professor", "admin"] },
+  { to: "/send-notification", label: "اعلان‌ها", icon: Bell, roles: ["professor"] },
   { to: "/live-polls", label: "نظرسنجی حین تدریس", icon: Vote, roles: [] },
   { to: "/smart-panel", label: "پنل هوشمند", icon: Bot, roles: ["student", "professor"] },
   { to: "/academic-structure", label: "پنل واحد آموزش", icon: Building2, roles: ["admin"] },
