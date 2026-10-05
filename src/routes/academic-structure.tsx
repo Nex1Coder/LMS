@@ -11,6 +11,7 @@ function AcademicStructurePage() {
       <div className="p-6">
         <h2 className="text-xl font-bold">پنل واحد آموزش</h2>
         <p className="mt-2 text-muted-foreground">اینجا محتوا قرار می‌گیرد.</p>
+        {/* trigger rebuild */}
       </div>
     </AppShell>
   );
