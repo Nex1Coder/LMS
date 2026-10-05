@@ -27,9 +27,8 @@ export function StudentDashboard() {
   return (
     <div className="grid gap-5 xl:grid-cols-3">
       <div className="space-y-5 xl:col-span-2">
-        <div className="grid gap-4 sm:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           {[
-            { label: "معدل کل", value: "۱۷٫۴۲", icon: TrendingUp },
             { label: "واحدهای این ترم", value: "۱۴", icon: GraduationCap },
             { label: "تکالیف باز", value: String(openAssignments.length), icon: ClipboardList },
             { label: "اعلان‌های جدید", value: String(newNotificationsCount), icon: Bell },
