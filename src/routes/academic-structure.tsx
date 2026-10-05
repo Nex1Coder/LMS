@@ -16,6 +16,31 @@ function AcademicStructurePage() {
       <div className="p-6 space-y-6">
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
+            <BarChart3 className="size-5" />
+            <CardTitle className="text-base">داشبورد</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="p-4 border rounded-xl">
+              <p className="text-xs text-muted-foreground">مجتمع/دانشکده</p>
+              <p className="text-lg font-bold">—</p>
+            </div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-xs text-muted-foreground">تعداد دروس تعریف‌شده</p>
+              <p className="text-lg font-bold">—</p>
+            </div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-xs text-muted-foreground">اساتید فعال</p>
+              <p className="text-lg font-bold">—</p>
+            </div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-xs text-muted-foreground">کلاس‌های تشکیل‌شده</p>
+              <p className="text-lg font-bold">—</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
             <Building2 className="size-5" />
             <CardTitle className="text-base">ساختار سازمانی</CardTitle>
           </CardHeader>
