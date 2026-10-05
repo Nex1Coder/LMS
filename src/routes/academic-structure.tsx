@@ -32,7 +32,7 @@ function AcademicStructurePage() {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <BookOpen className="size-5" />
-            <CardTitle className="text-base">تعریف دروس</CardTitle>
+            <CardTitle className="text-base">تعریف دروس و پیش‌نیازها</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
             <Input placeholder="کد درس" />
@@ -48,7 +48,7 @@ function AcademicStructurePage() {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Users className="size-5" />
-            <CardTitle className="text-base">اساتید و دانشجویان</CardTitle>
+            <CardTitle className="text-base">مدیریت اساتید و دانشجویان</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             <Input placeholder="نام کامل" />
@@ -77,7 +77,7 @@ function AcademicStructurePage() {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <BarChart3 className="size-5" />
-            <CardTitle className="text-base">گزارش‌گیری</CardTitle>
+            <CardTitle className="text-base">گزارش‌گیری پایه</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 lg:grid-cols-3">
             <div className="p-4 border rounded-xl">
@@ -98,7 +98,7 @@ function AcademicStructurePage() {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Settings className="size-5" />
-            <CardTitle className="text-base">تنظیمات</CardTitle>
+            <CardTitle className="text-base">تنظیمات سامانه</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             <Input placeholder="نام نقش" />
