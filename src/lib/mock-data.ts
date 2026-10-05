@@ -1,17 +1,21 @@
 // داده‌های نمونه سامانه جامع آموزش مجازی دانشگاه
 
-export type Role = "student" | "professor" | "admin";
+export type Role = "student" | "professor" | "admin" | "educational_consultant" | "educational_manager";
 
 export const roleLabels: Record<Role, string> = {
   student: "دانشجو",
   professor: "استاد",
-  admin: "واحد آموزش",
+  admin: "ادمین سامانه",
+  educational_consultant: "کارشناس اموزش",
+  educational_manager: "مدیر آموزش",
 };
 
 export const demoUsers: Record<Role, { name: string; meta: string; avatar: string }> = {
   student: { name: "سارا محمدی", meta: "کارشناسی مهندسی کامپیوتر — ورودی ۱۴۰۲", avatar: "س م" },
   professor: { name: "دکتر رضا کریمی", meta: "دانشکده فنی و مهندسی — گروه کامپیوتر", avatar: "ر ک" },
   admin: { name: "مهندس فاطمه احمدی", meta: "کارشناس واحد آموزش — معاونت آموزشی", avatar: "ف ا" },
+  educational_consultant: { name: "علی رضایی", meta: "کارشناس ارشد آموزش ـی", avatar: "ا ر" },
+  educational_manager: { name: " زهرا منصوری", meta: "مدیر بخش آموزش ـی وundos", avatar: "ز م" },
 };
 
 export const testStudents = [

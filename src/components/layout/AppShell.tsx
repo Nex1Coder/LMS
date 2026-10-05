@@ -68,11 +68,11 @@ const navItems: NavItem[] = [
   { to: "/send-notification", label: "اعلان‌ها", icon: Bell, roles: ["professor"] },
   { to: "/live-polls", label: "نظرسنجی حین تدریس", icon: Vote, roles: [] },
   { to: "/smart-panel", label: "پنل هوشمند", icon: Bot, roles: ["student", "professor"] },
-  { to: "/academic-org", label: "ساختار سازمانی", icon: Building2, roles: ["admin"] },
-  { to: "/academic-courses", label: "تعریف دروس و پیش‌نیازها", icon: BookOpen, roles: ["admin"] },
-  { to: "/academic-users", label: "مدیریت اساتید و دانشجویان", icon: Users, roles: ["admin"] },
-  { to: "/academic-classes", label: "تشکیل کلاس‌ها", icon: GraduationCap, roles: ["admin"] },
-  { to: "/academic-reports", label: "گزارش‌گیری پایه", icon: BarChart3, roles: ["admin"] },
+  { to: "/academic-org", label: "ساختور سازمانی", icon: Building2, roles: ["admin", "educational_manager"] },
+  { to: "/academic-courses", label: "تعریف دروس و پیش‌نیازها", icon: BookOpen, roles: ["admin", "educational_manager"] },
+  { to: "/academic-users", label: "مدیریت اساتید و دانشجویان", icon: Users, roles: ["admin", "educational_manager"] },
+  { to: "/academic-classes", label: "تشکیل کلاس‌ها", icon: GraduationCap, roles: ["admin", "educational_manager"] },
+  { to: "/academic-reports", label: "گزارش‌گیری پایه", icon: BarChart3, roles: ["admin", "educational_manager"] },
   { to: "/academic-settings", label: "تنظیمات سامانه", icon: Settings, roles: ["admin"] },
 ];
 
