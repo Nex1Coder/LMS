@@ -239,6 +239,22 @@ export const courses: Course[] = [
     slides: [{ title: "جلسه ۱ — مقدمه علم داده", size: "۳٫۵ مگابایت" }],
     recordings: [],
   },
+  {
+    id: "da-past",
+    title: "تحلیل داده",
+    code: "DA-201",
+    professor: "دکتر مریم حورعلی",
+    units: 3,
+    students: 45,
+    progress: 100,
+    nextSession: "—",
+    room: "—",
+    color: "bg-accent",
+    semester: "۱۴۰۴-۲",
+    grade: "۱۹.۵",
+    slides: [{ title: "جلسه ۱ — آمار توصیفی", size: "۲٫۸ مگابایت" }],
+    recordings: [{ title: "ضبط جلسه ۱۰ — رگرسیون", duration: "۱:۴۵:۰۰", date: "۱۴۰۴/۰۳/۱۰" }],
+  },
 ];
 
 export type TodayClass = {
