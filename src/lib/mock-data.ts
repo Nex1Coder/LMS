@@ -14,6 +14,11 @@ export const demoUsers: Record<Role, { name: string; meta: string; avatar: strin
   admin: { name: "مهندس فاطمه احمدی", meta: "کارشناس واحد آموزش — معاونت آموزشی", avatar: "ف ا" },
 };
 
+export const testStudents = [
+  { id: "s101", name: "علی احمدی", code: "942001", major: "مهندسی کامپیوتر", entry: "۱۴۰۲" },
+  { id: "s102", name: "نازنین کریمی", code: "942015", major: "مهندسی کامپیوتر", entry: "۱۴۰۲" },
+];
+
 export type Course = {
   id: string;
   title: string;
@@ -185,6 +190,38 @@ export const courses: Course[] = [
     grade: "۱۹.۰۰",
     slides: [{ title: "جلسه ۱ — مفاهیم شی‌گرا", size: "۲٫۸ مگابایت" }],
     recordings: [{ title: "ضبط جلسه ۹ — الگوهای طراحی", duration: "۱:۲۲:۰۰", date: "۱۴۰۴/۰۸/۱۸" }],
+  },
+  {
+    id: "test-c1",
+    title: "جبر خطی پیشرفته — آزمایشی",
+    code: "MATH-301",
+    professor: "دکتر احمدی",
+    units: 3,
+    students: 2,
+    progress: 30,
+    nextSession: "یکشنبه ۱۰:۰۰",
+    room: "کلاس مجازی ۱۰۱",
+    color: "bg-primary",
+    semester: "۱۴۰۵-۱",
+    grade: null,
+    slides: [{ title: "جلسه ۱ — ماتریس‌ها", size: "۲٫۵ مگابایت" }],
+    recordings: [],
+  },
+  {
+    id: "test-c2",
+    title: "شبکه‌های کامپیوتری — آزمایشی",
+    code: "NET-401",
+    professor: "دکتر رضایی",
+    units: 3,
+    students: 2,
+    progress: 15,
+    nextSession: "دوشنبه ۱۴:۰۰",
+    room: "کلاس مجازی ۱۰۲",
+    color: "bg-accent",
+    semester: "۱۴۰۵-۱",
+    grade: null,
+    slides: [{ title: "جلسه ۱ — لایه‌های OSI", size: "۳٫۰ مگابایت" }],
+    recordings: [],
   },
 ];
 
