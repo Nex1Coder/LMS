@@ -75,7 +75,7 @@ export function StudentDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {upcomingAssignments.map(a => (
+            {upcomingAssignments.slice(0, 2).map(a => (
               <div key={a.id} className="rounded-xl border border-border p-3">
                 <p className="text-sm font-medium leading-6">{a.title}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{a.course}</p>
@@ -96,7 +96,7 @@ export function StudentDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {exams.filter(e => e.status !== "برگزار شده").slice(0, 5).map(e => (
+            {exams.filter(e => e.status !== "برگزار شده").slice(0, 2).map(e => (
               <div key={e.id} className="rounded-xl border border-border p-3">
                 <p className="text-sm font-medium leading-6">{e.course}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{e.type} • {e.date} • {e.time} • {e.duration}</p>
@@ -124,7 +124,7 @@ export function StudentDashboard() {
             <CardTitle className="text-base">اعلان‌های مهم</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {importantNotifications.map(n => (
+            {importantNotifications.slice(0, 2).map(n => (
               <div key={n.id} className="rounded-xl border border-border p-3">
                 <div className="flex items-start gap-2">
                   <FileText className="size-4 mt-0.5 text-muted-foreground" />
