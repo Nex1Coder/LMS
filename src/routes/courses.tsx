@@ -132,7 +132,7 @@ function CurrentSemesterCourses({
                   <Progress value={c.progress} />
                 </div>
                 <Button asChild size="sm" className="w-full">
-                  <a href={mockBBBJoinLink(c.code, c.id)} target="_blank" rel="noreferrer">ورود به کلاس مجازی</a>
+                  <Link to="/classroom" search={{ session: `${c.code}-${c.id}` }}>ورود به کلاس مجازی</Link>
                 </Button>
               </CardContent>
             </Card>
