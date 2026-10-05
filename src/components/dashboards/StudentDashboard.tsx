@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { ClipboardList, GraduationCap, Bell, TrendingUp, CalendarClock, FileText } from "lucide-react";
+import { ClipboardList, GraduationCap, Bell, TrendingUp, CalendarClock, FileText, FileClock } from "lucide-react";
 import {
   assignments,
   notifications,
   classSessions,
+  exams,
 } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,6 +83,35 @@ export function StudentDashboard() {
                 <div className="mt-2 flex items-center justify-between text-xs">
                   <span className="text-muted-foreground flex items-center gap-1"><CalendarClock className="size-3.5"/>مهلت: {a.due}</span>
                   <Badge variant={a.status === "در انتظار ارسال" ? "default" : "secondary"}>{a.status}</Badge>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-base">آزمون‌های پیش‌رو</CardTitle>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/exams">همه آزمون‌ها</Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {exams.filter(e => e.status !== "برگزار شده").slice(0, 5).map(e => (
+              <div key={e.id} className="rounded-xl border border-border p-3">
+                <p className="text-sm font-medium leading-6">{e.course}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{e.type} • {e.date} • {e.time} • {e.duration}</p>
+                <div className="mt-2 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground flex items-center gap-1"><FileClock className="size-3.5"/>سؤالات: {e.questions}</span>
+                  <Badge variant="secondary">{e.status}</Badge>
+                </div>
+                <div className="mt-2 flex gap-2">
+                  <Button asChild size="sm" variant="outline" className="h-7 text-xs">
+                    <Link to={`/exams/${e.id}`}>شرکت در آزمون</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="ghost" className="h-7 text-xs">
+                    <Link to={`/grades`}>مشاهده نتایج</Link>
+                  </Button>
                 </div>
               </div>
             ))}
